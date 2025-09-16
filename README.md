@@ -1,49 +1,55 @@
-# WareQ WMS Project
-**Full Stack Django Warehouse Management System (WMS)**
+# 🚀 WareQ WMS Project
+
+![WareQ Banner](https://github.com/Jacob11Q1/WareQ-WMS-Project/blob/main/assets/banner.gif)
+
+> **Warehouse Management System (WMS)** built with Django to manage tasks, inventory, and users efficiently.
 
 ---
 
-## 🚀 Project Overview
-WareQ WMS is a **Django-based Warehouse Management System** designed to help manage tasks, products, and inventory efficiently.  
-This project demonstrates:  
-- User authentication (Login/Registration)  
-- Dynamic CRUD operations with AJAX  
-- API integration  
-- Fully responsive design  
-- Secure form handling with CSRF protection  
+## 🎯 Project Overview
+
+**WareQ WMS** is a modern, **full-stack Django application** that provides a clean interface to manage warehouse operations, tasks, and categories. It demonstrates:
+
+- User authentication (login & registration)
+- Dynamic CRUD operations with **AJAX**
+- API integration
+- Fully responsive design (desktop, tablet, mobile)
+- Form validation & security features (CSRF, SQL injection protection)
 
 ---
 
-## 🛠 Features
-1. **User Authentication**
-   - Registration & Login
-   - Password hashing
-   - Session management
+## ✨ Features
 
-2. **Dashboard & CRUD**
-   - Add, edit, delete tasks/items
-   - Real-time updates using AJAX
-   - Categorize tasks/items
+### 🛡 User Authentication
+- Secure registration & login system
+- Password hashing and session management
+- Input validation to prevent attacks
 
-3. **API Endpoint**
-   - REST API to fetch user-specific data in JSON
+### 📊 Dashboard & CRUD Operations
+- Add, edit, delete tasks or items
+- Categorize items and tasks
+- Real-time updates without full page reloads using AJAX
 
-4. **About Page**
-   - Project info and developer details
+### 🌐 API Endpoint
+- REST API to fetch user-specific tasks/items in JSON
+- Example endpoint: `/api/items/`
 
-5. **Responsive Design**
-   - Works on Desktop, Tablet, Mobile
+### 📱 Responsive Design
+- Fully responsive UI using **Bootstrap**
+- Compatible with desktop, tablet, and mobile
 
-6. **Security**
-   - CSRF protection
-   - Form validation
+### 🔒 Security
+- CSRF protection enabled
+- Input validation to prevent SQL injection
+- Secure authentication
 
 ---
 
-## 📂 Folder Structure
+## 🗂 Folder Structure
+
 wareq_project/
 │
-├── main/ # Main app
+├── main/
 │ ├── migrations/
 │ ├── templates/
 │ ├── static/
@@ -52,51 +58,22 @@ wareq_project/
 │ ├── views.py
 │ └── urls.py
 │
-├── wareq_project/ # Project settings
+├── wareq_project/
 │ ├── settings.py
 │ ├── urls.py
 │ └── wsgi.py
 │
-├── docs/ # Documentation
+├── docs/
 │ ├── ERD.png
 │ └── wireframes/
 │
 ├── manage.py
 └── README.md
 
-🔗 API Endpoints
-
-GET /api/items/ → Returns JSON of user-specific items/tasks
-
-📌 Wireframes & ERD
-
-ERD: docs/ERD.png
-
-Wireframes: docs/wireframes/
-
-💻 Tech Stack
-
-Backend: Django 5.2, Python 3.13
-
-Frontend: HTML, CSS, Bootstrap, JavaScript (AJAX)
-
-Database: MySQL
-
-Deployment: AWS (Elastic Beanstalk / EC2)
-
-
-📝 Future Improvements:
-
--- Implement user roles (Admin, Staff)
--- Add notifications / email system
--- Advanced inventory reports
--- Dark/Light mode toggle
-
 
 👨‍💻 Author:
-
--- Jacob Qumsiyeh
--- Email: qumsiyeh37@gmail.com
--- Phone: +972597298205
--- GitHub: Jacob11Q1
--- Instagram: jacob1q11
+      -- Jacob Qumsiyeh
+      -- Email: qumsiyeh37@gmail.com
+      -- Phone: +972597298205
+      -- GitHub: Jacob11Q1
+      -- Instagram: jacob1q11
