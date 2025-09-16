@@ -64,5 +64,39 @@ wareq_project/
 ├── manage.py
 └── README.md
 
-Solo Project For My Axsos Academy Bootcamp
-Author: @Jacob Qumsiyeh
+🔗 API Endpoints
+
+GET /api/items/ → Returns JSON of user-specific items/tasks
+
+📌 Wireframes & ERD
+
+ERD: docs/ERD.png
+
+Wireframes: docs/wireframes/
+
+💻 Tech Stack
+
+Backend: Django 5.2, Python 3.13
+
+Frontend: HTML, CSS, Bootstrap, JavaScript (AJAX)
+
+Database: MySQL
+
+Deployment: AWS (Elastic Beanstalk / EC2)
+
+
+📝 Future Improvements:
+
+-- Implement user roles (Admin, Staff)
+-- Add notifications / email system
+-- Advanced inventory reports
+-- Dark/Light mode toggle
+
+
+👨‍💻 Author:
+
+-- Jacob Qumsiyeh
+-- Email: qumsiyeh37@gmail.com
+-- Phone: +972597298205
+-- GitHub: Jacob11Q1
+-- Instagram: jacob1q11
