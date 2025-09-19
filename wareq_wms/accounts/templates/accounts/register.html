@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="auth-wrapper d-flex justify-content-center align-items-center">
+    <div class="auth-card p-5 shadow-lg">
+        <!-- Logo inside card -->
+        <div class="text-center mb-4">
+            <img src="{% static 'images/WareQ_Logo-removebg-preview.png' %}" alt="WareQ Logo" class="auth-logo mb-3" style="width: 150px;">
+            <h2 class="fw-bold text-danger">Register</h2>
+            <p class="auth-subtext">Create your WareQ account</p>
+        </div>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+                <input type="text" name="username" class="form-control" required placeholder="Choose a username">
+            </div>
+            <div class="mb-3">
+                <input type="email" name="email" class="form-control" required placeholder="Enter your email">
+            </div>
+            <div class="mb-3">
+                <input type="password" name="password1" class="form-control" required placeholder="Enter password">
+            </div>
+            <div class="mb-3">
+                <input type="password" name="password2" class="form-control" required placeholder="Re-enter password">
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-danger">Register</button>
+            </div>
+        </form>
+
+        <p class="text-center mt-3">
+            Already have an account? 
+            <a href="{% url 'accounts:login' %}" class="text-danger fw-bold">Login</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="auth-wrapper d-flex justify-content-center align-items-center">
+    <div class="auth-card p-5 shadow-lg text-center">
+        <img src="{% static 'images/WareQ_Logo-removebg-preview.png' %}" alt="WareQ Logo" class="auth-logo mb-3" style="width: 150px;">
+        <h2 class="fw-bold">Hello, {{ user.username }}</h2>
+        <p class="auth-subtext">Role: <span class="badge bg-danger">{{ user.role }}</span></p>
+        <hr>
+        <p>Email: <strong>{{ user.email }}</strong></p>
+        <p>Member since: {{ user.date_joined|date:"F j, Y" }}</p>
+        <a href="{% url 'accounts:logout' %}" class="btn btn-outline-danger mt-3">Logout</a>
+    </div>
+</div>
+{% endblock %}
