@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-lg stat-card w-100" style="max-width: 700px;">
+        <div class="card-body">
+            <h2 class="fw-bold mb-4 text-center text-light">
+                {% if form.instance.pk %}
+                <i class="bi bi-pencil-square text-danger"></i> Edit Order
+                {% else %}
+                <i class="bi bi-cart-plus text-danger"></i> New Order
+                {% endif %}
+            </h2>
+
+            <form method="post" class="text-light">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.as_p }}
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-check-circle"></i> Save Order
+                    </button>
+                </div>
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'orders:order_list' %}" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left-circle"></i> Back to Orders
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-light">
+            <i class="bi bi-truck text-danger"></i> Suppliers
+        </h2>
+        <a href="{% url 'suppliers:supplier_add' %}" class="btn btn-danger">
+            <i class="bi bi-person-plus"></i> Add Supplier
+        </a>
+    </div>
+
+    <!-- Stat Card -->
+    <div class="card shadow-lg stat-card mb-4 text-center">
+        <div class="card-body">
+            <i class="bi bi-buildings display-6 text-danger"></i>
+            <h2 class="fw-bold text-danger mt-2">{{ total_suppliers }}</h2>
+            <p class="mb-0">Total Suppliers</p>
+        </div>
+    </div>
+
+    <!-- Supplier Table -->
+    <div class="card shadow-lg stat-card">
+        <div class="card-body table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0">
+                <thead class="text-danger">
+                    <tr>
+                        <th><i class="bi bi-hash"></i></th>
+                        <th><i class="bi bi-building"></i> Name</th>
+                        <th><i class="bi bi-envelope"></i> Email</th>
+                        <th><i class="bi bi-telephone"></i> Phone</th>
+                        <th><i class="bi bi-geo-alt"></i> Address</th>
+                        <th><i class="bi bi-tools"></i> Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for supplier in suppliers %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ supplier.name }}</td>
+                        <td>{{ supplier.email }}</td>
+                        <td>{{ supplier.phone|default:"-" }}</td>
+                        <td>{{ supplier.address|default:"-" }}</td>
+                        <td>
+                            <a href="{% url 'suppliers:supplier_edit' supplier.id %}"
+                                class="btn btn-sm btn-outline-light me-1">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'suppliers:supplier_delete' supplier.id %}" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No suppliers found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

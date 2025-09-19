@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card auth-card shadow-lg w-100" style="max-width: 600px;">
+        <div class="card-body">
+            <h2 class="text-danger fw-bold mb-4 text-center">
+                {% if form.instance.pk %}
+                <i class="bi bi-pencil-square"></i> Edit Supplier
+                {% else %}
+                <i class="bi bi-person-plus"></i> Add Supplier
+                {% endif %}
+            </h2>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.name.label_tag }}
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-light"><i class="bi bi-building"></i></span>
+                        {{ form.name }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form.email.label_tag }}
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-light"><i class="bi bi-envelope"></i></span>
+                        {{ form.email }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form.phone.label_tag }}
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-light"><i class="bi bi-telephone"></i></span>
+                        {{ form.phone }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form.address.label_tag }}
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-light"><i class="bi bi-geo-alt"></i></span>
+                        {{ form.address }}
+                    </div>
+                </div>
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-save"></i> Save Supplier
+                    </button>
+                </div>
+            </form>
+
+            <div class="text-center mt-3">
+                <a href="{% url 'suppliers:supplier_list' %}" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left"></i> Back to Suppliers
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

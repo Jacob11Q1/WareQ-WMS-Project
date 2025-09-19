@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card auth-card shadow-lg w-100" style="max-width: 600px;">
+        <div class="card-body">
+            <!-- Title -->
+            <h2 class="text-danger fw-bold mb-4 text-center">
+                {% if form.instance.pk %}
+                <i class="bi bi-pencil-square"></i> Edit Item
+                {% else %}
+                <i class="bi bi-plus-circle"></i> Add Item
+                {% endif %}
+            </h2>
+
+            <!-- Form -->
+            <form method="post" class="text-start">
+                {% csrf_token %}
+
+                <!-- Custom Styled Form Fields -->
+                <div class="mb-3">
+                    <label for="id_sku" class="form-label">
+                        <i class="bi bi-upc"></i> SKU
+                    </label>
+                    {{ form.sku }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_name" class="form-label">
+                        <i class="bi bi-box"></i> Name
+                    </label>
+                    {{ form.name }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_quantity" class="form-label">
+                        <i class="bi bi-123"></i> Quantity
+                    </label>
+                    {{ form.quantity }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_price" class="form-label">
+                        <i class="bi bi-cash-stack"></i> Price
+                    </label>
+                    {{ form.price }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_supplier" class="form-label">
+                        <i class="bi bi-truck"></i> Supplier
+                    </label>
+                    {{ form.supplier }}
+                </div>
+
+                <!-- Submit -->
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-save"></i> Save Item
+                    </button>
+                </div>
+            </form>
+
+            <!-- Back Button -->
+            <div class="text-center mt-3">
+                <a href="{% url 'inventory:index' %}" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left-circle"></i> Back to Inventory
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

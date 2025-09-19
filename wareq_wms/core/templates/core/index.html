@@ -6,11 +6,12 @@
 <section class="hero-section text-center py-5">
     <div class="container">
         <img src="{% static 'images/WareQ_Logo-removebg-preview.png' %}" alt="WareQ Logo"
-            class="img-fluid mb-4 hero-logo">
-
+            class="img-fluid mb-4 hero-logo" style="max-width:200px;">
         <h1 class="display-4 fw-bold text-danger typing-text">Welcome to WareQ</h1>
         <p class="lead text-light">A modern, powerful, and scalable Warehouse Management System.</p>
-        <a href="{% url 'accounts:register' %}" class="btn btn-danger btn-lg mt-3">Get Started</a>
+        <a href="{% url 'accounts:register' %}" class="btn btn-danger btn-lg mt-3">
+            <i class="bi bi-person-plus-fill"></i> Get Started
+        </a>
     </div>
 </section>
 
@@ -23,7 +24,7 @@
                     <img src="https://via.placeholder.com/1200x400/111111/ffffff?text=Inventory+Management"
                         class="d-block w-100 rounded" alt="Inventory">
                     <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
-                        <h5 class="text-danger">Smart Inventory</h5>
+                        <h5 class="text-danger"><i class="bi bi-box-seam"></i> Smart Inventory</h5>
                         <p>Track stock in real-time with accuracy.</p>
                     </div>
                 </div>
@@ -31,7 +32,7 @@
                     <img src="https://via.placeholder.com/1200x400/222222/ffffff?text=Order+Processing"
                         class="d-block w-100 rounded" alt="Orders">
                     <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
-                        <h5 class="text-danger">Fast Orders</h5>
+                        <h5 class="text-danger"><i class="bi bi-cart-check-fill"></i> Fast Orders</h5>
                         <p>Manage sales & purchase orders effortlessly.</p>
                     </div>
                 </div>
@@ -39,8 +40,8 @@
                     <img src="https://via.placeholder.com/1200x400/333333/ffffff?text=Dashboard+Analytics"
                         class="d-block w-100 rounded" alt="Dashboard">
                     <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
-                        <h5 class="text-danger">Powerful Dashboard</h5>
-                        <p>Visualize KPIs and warehouse performance instantly.</p>
+                        <h5 class="text-danger"><i class="bi bi-bar-chart-line-fill"></i> Powerful Dashboard</h5>
+                        <p>Visualize KPIs and performance instantly.</p>
                     </div>
                 </div>
             </div>
@@ -60,41 +61,51 @@
         <h2 class="text-center text-danger fw-bold mb-5">Core Features</h2>
         <div class="row g-5 text-center">
             <div class="col-md-4">
-                <div class="card feature-card h-100 p-4 text-light">
-                    <div class="icon">📦</div>
-                    <h5 class="card-title">Inventory</h5>
-                    <p class="card-text">Add, update, and track items with ease.</p>
-                </div>
+                <a href="{% url 'inventory:index' %}" class="text-decoration-none text-light">
+                    <div class="card feature-card h-100 p-4 text-light">
+                        <div class="icon"><i class="bi bi-box-seam display-5 text-danger"></i></div>
+                        <h5 class="card-title">Inventory</h5>
+                        <p class="card-text">Add, update, and track items with ease.</p>
+                    </div>
+                </a>
             </div>
             <div class="col-md-4">
-                <div class="card feature-card h-100 p-4 text-light">
-                    <div class="icon">🛒</div>
-                    <h5 class="card-title">Orders</h5>
-                    <p class="card-text">Create sales and purchase orders fast.</p>
-                </div>
+                <a href="{% url 'orders:index' %}" class="text-decoration-none text-light">
+                    <div class="card feature-card h-100 p-4 text-light">
+                        <div class="icon"><i class="bi bi-cart-check-fill display-5 text-danger"></i></div>
+                        <h5 class="card-title">Orders</h5>
+                        <p class="card-text">Create sales and purchase orders fast.</p>
+                    </div>
+                </a>
             </div>
             <div class="col-md-4">
-                <div class="card feature-card h-100 p-4 text-light">
-                    <div class="icon">📊</div>
-                    <h5 class="card-title">Dashboard</h5>
-                    <p class="card-text">Real-time KPIs & performance analytics.</p>
-                </div>
+                <a href="{% url 'dashboard:index' %}" class="text-decoration-none text-light">
+                    <div class="card feature-card h-100 p-4 text-light">
+                        <div class="icon"><i class="bi bi-graph-up-arrow display-5 text-danger"></i></div>
+                        <h5 class="card-title">Dashboard</h5>
+                        <p class="card-text">Real-time KPIs & performance analytics.</p>
+                    </div>
+                </a>
             </div>
         </div>
         <div class="row g-5 text-center mt-4">
             <div class="col-md-6">
-                <div class="card feature-card h-100 p-4 text-light">
-                    <div class="icon">🤝</div>
-                    <h5 class="card-title">Suppliers</h5>
-                    <p class="card-text">Manage supplier records & purchase sources.</p>
-                </div>
+                <a href="{% url 'suppliers:index' %}" class="text-decoration-none text-light">
+                    <div class="card feature-card h-100 p-4 text-light">
+                        <div class="icon"><i class="bi bi-truck display-5 text-danger"></i></div>
+                        <h5 class="card-title">Suppliers</h5>
+                        <p class="card-text">Manage supplier records & purchase sources.</p>
+                    </div>
+                </a>
             </div>
             <div class="col-md-6">
-                <div class="card feature-card h-100 p-4 text-light">
-                    <div class="icon">👥</div>
-                    <h5 class="card-title">Customers</h5>
-                    <p class="card-text">Track customer accounts & order history.</p>
-                </div>
+                <a href="{% url 'customers:index' %}" class="text-decoration-none text-light">
+                    <div class="card feature-card h-100 p-4 text-light">
+                        <div class="icon"><i class="bi bi-people-fill display-5 text-danger"></i></div>
+                        <h5 class="card-title">Customers</h5>
+                        <p class="card-text">Track customer accounts & order history.</p>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
@@ -105,26 +116,30 @@
     <div class="container">
         <div class="row g-4">
             <div class="col-md-3">
-                <div class="card p-4">
-                    <h2 class="text-danger fw-bold">10K+</h2>
+                <div class="stat-card p-4">
+                    <i class="bi bi-box-seam display-6 text-danger"></i>
+                    <h2 class="fw-bold text-light">10K+</h2>
                     <p>Items Managed</p>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card p-4">
-                    <h2 class="text-danger fw-bold">5K+</h2>
+                <div class="stat-card p-4">
+                    <i class="bi bi-cart-check-fill display-6 text-danger"></i>
+                    <h2 class="fw-bold text-light">5K+</h2>
                     <p>Orders Processed</p>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card p-4">
-                    <h2 class="text-danger fw-bold">500+</h2>
+                <div class="stat-card p-4">
+                    <i class="bi bi-building display-6 text-danger"></i>
+                    <h2 class="fw-bold text-light">500+</h2>
                     <p>Warehouses Supported</p>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card p-4">
-                    <h2 class="text-danger fw-bold">99.9%</h2>
+                <div class="stat-card p-4">
+                    <i class="bi bi-cloud-check-fill display-6 text-danger"></i>
+                    <h2 class="fw-bold text-light">99.9%</h2>
                     <p>Uptime</p>
                 </div>
             </div>
@@ -140,19 +155,19 @@
             <div class="col-md-4">
                 <div class="card testimonial-card h-100 p-4 text-light">
                     <p>"WareQ simplified our inventory tracking. We saved hours every week!"</p>
-                    <h6 class="text-danger">— Sarah M.</h6>
+                    <h6 class="text-danger"><i class="bi bi-person-circle"></i> Sarah M.</h6>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card testimonial-card h-100 p-4 text-light">
                     <p>"The dashboard analytics are a game changer for warehouse operations."</p>
-                    <h6 class="text-danger">— Ahmed K.</h6>
+                    <h6 class="text-danger"><i class="bi bi-person-circle"></i> Ahmed K.</h6>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card testimonial-card h-100 p-4 text-light">
                     <p>"Finally, a WMS system that looks modern and is easy to use."</p>
-                    <h6 class="text-danger">— David L.</h6>
+                    <h6 class="text-danger"><i class="bi bi-person-circle"></i> David L.</h6>
                 </div>
             </div>
         </div>
@@ -166,27 +181,27 @@
         <div class="row g-5 justify-content-center">
             <div class="col-md-3">
                 <div class="card pricing-card h-100 p-4 text-light">
+                    <i class="bi bi-lightning-charge text-danger fs-2 mb-2"></i>
                     <h5>Starter</h5>
                     <h2 class="text-danger fw-bold">$9</h2>
-                    <p>Small businesses</p>
-                    <a href="#" class="btn btn-danger w-100">Choose</a>
+                    <p>Small businesses</p><a href="#" class="btn btn-danger w-100">Choose</a>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card pricing-card h-100 p-4 text-light"
                     style="border: 2px solid var(--accent); transform: scale(1.05);">
+                    <i class="bi bi-stars text-danger fs-2 mb-2"></i>
                     <h5>Pro</h5>
                     <h2 class="text-danger fw-bold">$29</h2>
-                    <p>Growing warehouses</p>
-                    <a href="#" class="btn btn-danger w-100">Choose</a>
+                    <p>Growing warehouses</p><a href="#" class="btn btn-danger w-100">Choose</a>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card pricing-card h-100 p-4 text-light">
+                    <i class="bi bi-gem text-danger fs-2 mb-2"></i>
                     <h5>Enterprise</h5>
                     <h2 class="text-danger fw-bold">$99</h2>
-                    <p>Large organizations</p>
-                    <a href="#" class="btn btn-danger w-100">Choose</a>
+                    <p>Large organizations</p><a href="#" class="btn btn-danger w-100">Choose</a>
                 </div>
             </div>
         </div>
@@ -197,7 +212,9 @@
 <section class="py-5 text-center bg-danger text-light">
     <h2 class="fw-bold">Boost Your Warehouse Efficiency Today!</h2>
     <p>Join hundreds of businesses already using WareQ.</p>
-    <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg">Sign Up Now</a>
+    <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg">
+        <i class="bi bi-person-plus-fill"></i> Sign Up Now
+    </a>
 </section>
 
 {% endblock %}

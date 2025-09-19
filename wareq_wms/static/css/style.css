@@ -2,7 +2,6 @@
 :root {
     --bg-color: #121212;
     --text-color: #ffffff;
-    /* pure white for readability */
     --card-bg: #1a1a1a;
     --accent: #dc3545;
     --secondary: #2a2a2a;
@@ -22,6 +21,13 @@ body {
     transition: background 0.3s ease, color 0.3s ease;
     font-family: "Poppins", sans-serif;
     line-height: 1.7;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main.content-wrapper {
+    flex: 1;
 }
 
 h1,
@@ -33,24 +39,62 @@ h5 {
     margin-bottom: 1rem;
 }
 
-/* Navbar & Footer */
-.navbar,
-footer {
+/* Navbar */
+.navbar {
     background-color: var(--bg-color) !important;
     border-bottom: 1px solid var(--secondary);
 }
 
-footer {
-    border-top: 1px solid var(--secondary);
+.navbar-toggler {
+    border: 1px solid var(--accent);
 }
 
+.navbar-toggler-icon {
+    background-image: none !important;
+    width: 1.5rem;
+    height: 1.5rem;
+    position: relative;
+}
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after,
+.navbar-toggler-icon div {
+    content: "";
+    display: block;
+    height: 2px;
+    background: var(--accent);
+    margin: 5px 0;
+    border-radius: 2px;
+}
+
+/* Nav links */
 .nav-link {
     color: var(--text-color) !important;
     transition: color 0.2s ease;
+    position: relative;
+    padding-bottom: 4px;
 }
 
 .nav-link:hover {
     color: var(--accent) !important;
+}
+
+.nav-link.active::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+}
+
+/* Footer */
+footer {
+    background-color: var(--bg-color) !important;
+    border-top: 1px solid var(--secondary);
+    margin-top: auto;
 }
 
 /* Cards */
@@ -66,16 +110,51 @@ footer {
 }
 
 .card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(220, 53, 69, 0.5);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(220, 53, 69, 0.5);
 }
 
-/* Space out cards in grid */
-.row .card {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+/* Dashboard Stat Cards Shine Effect */
+.stat-card {
+    border: 1px solid rgba(220, 53, 69, 0.4);
+    border-radius: 16px;
+    background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 0 25px rgba(220, 53, 69, 0.6),
+        0 0 50px rgba(220, 53, 69, 0.3);
+    border-color: #dc3545;
+}
+
+.stat-card::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(220, 53, 69, 0.15) 0%, transparent 70%);
+    transform: rotate(25deg);
+    animation: shineMove 6s linear infinite;
+}
+
+@keyframes shineMove {
+    0% {
+        transform: rotate(25deg) translate(-30%, -30%);
+    }
+
+    50% {
+        transform: rotate(25deg) translate(30%, 30%);
+    }
+
+    100% {
+        transform: rotate(25deg) translate(-30%, -30%);
+    }
 }
 
 /* Features */
@@ -154,16 +233,24 @@ footer {
 /* Inputs */
 .auth-card input {
     background: var(--secondary);
-    color: var(--text-color);
+    color: var(--text-color) !important;
     border-radius: 8px;
     border: none;
     padding: 10px;
+    width: 100%;
+}
+
+.auth-card input::placeholder {
+    color: var(--text-color);
+    opacity: 0.7;
 }
 
 .auth-card input:focus {
     border: 2px solid var(--accent);
     background: var(--card-bg);
+    color: var(--text-color) !important;
     box-shadow: 0 0 6px rgba(220, 53, 69, 0.5);
+    outline: none;
 }
 
 /* Buttons */
@@ -176,29 +263,15 @@ footer {
     box-shadow: 0 0 12px rgba(220, 53, 69, 0.7);
 }
 
-/* Force input text to be readable */
-.auth-card input {
-    background: var(--secondary);
-    color: var(--text-color) !important;
-    border-radius: 8px;
-    border: none;
-    padding: 10px;
+/* Table Improvements */
+.table-dark th,
+.table-dark td {
+    vertical-align: middle;
 }
 
-/* Fix placeholder color */
-.auth-card input::placeholder {
-    color: var(--text-color);
-    opacity: 0.8; /* slightly lighter for distinction */
+.table-hover tbody tr:hover {
+    background-color: rgba(220, 53, 69, 0.1) !important;
 }
-
-/* When focused */
-.auth-card input:focus {
-    border: 2px solid var(--accent);
-    background: var(--card-bg);
-    color: var(--text-color) !important;
-    box-shadow: 0 0 6px rgba(220, 53, 69, 0.5);
-}
-
 
 /* Animations */
 @keyframes typing {
@@ -214,5 +287,48 @@ footer {
 @keyframes blink {
     50% {
         border-color: transparent
+    }
+}
+
+/* Responsive Tweaks */
+@media (max-width: 992px) {
+    .navbar-nav {
+        text-align: center;
+    }
+
+    .dropdown-menu {
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .card {
+        margin: 1rem 0;
+    }
+
+    .auth-card {
+        padding: 1.5rem;
+    }
+
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+
+    .stat-card h2 {
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-logo {
+        max-width: 120px;
+    }
+
+    .typing-text {
+        font-size: 1rem;
+    }
+
+    .stat-card h2 {
+        font-size: 1.3rem;
     }
 }
