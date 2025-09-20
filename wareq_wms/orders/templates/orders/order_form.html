@@ -1,33 +1,52 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="container py-5 d-flex justify-content-center">
-    <div class="card shadow-lg stat-card w-100" style="max-width: 700px;">
+    <div class="card shadow-lg stat-card w-100" style="max-width: 900px;">
         <div class="card-body">
             <h2 class="fw-bold mb-4 text-center text-light">
-                {% if form.instance.pk %}
-                <i class="bi bi-pencil-square text-danger"></i> Edit Order
-                {% else %}
-                <i class="bi bi-cart-plus text-danger"></i> New Order
-                {% endif %}
+                {% if form.instance.pk %}<i class="bi bi-pencil-square text-danger"></i> Edit Order
+                {% else %}<i class="bi bi-cart-plus text-danger"></i> New Order{% endif %}
             </h2>
 
-            <form method="post" class="text-light">
+            <form method="post">
                 {% csrf_token %}
-                <div class="mb-3">
-                    {{ form.as_p }}
+                <div class="row">
+                    <div class="col-md-6 mb-3">{{ form.order_type }}</div>
+                    <div class="col-md-6 mb-3">{{ form.status }}</div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">{{ form.customer }}</div>
+                    <div class="col-md-6 mb-3">{{ form.supplier }}</div>
+                </div>
+
+                <h4 class="text-danger mt-4">Order Items</h4>
+                {{ formset.management_form }}
+                <table class="table table-dark">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Delete?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in formset %}
+                        <tr>
+                            <td>{{ form.item }}</td>
+                            <td>{{ form.quantity }}</td>
+                            <td>{{ form.price }}</td>
+                            <td>{{ form.DELETE }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-check-circle"></i> Save Order
-                    </button>
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-check-circle"></i> Save Order</button>
                 </div>
             </form>
-
-            <div class="text-center mt-4">
-                <a href="{% url 'orders:order_list' %}" class="btn btn-outline-light">
-                    <i class="bi bi-arrow-left-circle"></i> Back to Orders
-                </a>
-            </div>
         </div>
     </div>
 </div>

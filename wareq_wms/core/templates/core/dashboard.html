@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="fw-bold text-light mb-4">
+        <i class="bi bi-speedometer2 text-danger"></i> Dashboard
+    </h2>
+
+    <!-- Stats -->
+    <div class="row g-4 mb-4 text-center">
+        <div class="col-md-3">
+            <div class="card stat-card p-4 shadow-sm">
+                <h2 class="fw-bold text-danger">{{ orders_count }}</h2>
+                <p class="mb-0">Orders</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card p-4 shadow-sm">
+                <h2 class="fw-bold text-danger">{{ customers_count }}</h2>
+                <p class="mb-0">Customers</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card p-4 shadow-sm">
+                <h2 class="fw-bold text-danger">{{ suppliers_count }}</h2>
+                <p class="mb-0">Suppliers</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card p-4 shadow-sm">
+                <h2 class="fw-bold text-danger">{{ items_count }}</h2>
+                <p class="mb-0">Items</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h5 class="fw-bold text-danger mb-3">Recent Orders</h5>
+                    <ul class="list-group list-group-flush">
+                        {% for order in recent_orders %}
+                        <li class="list-group-item bg-dark text-light">
+                            <i class="bi bi-cart-check"></i> #{{ order.id }} – {{ order.status }}
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item bg-dark text-muted">No recent orders</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h5 class="fw-bold text-danger mb-3">Recent Customers</h5>
+                    <ul class="list-group list-group-flush">
+                        {% for c in recent_customers %}
+                        <li class="list-group-item bg-dark text-light">
+                            <i class="bi bi-person"></i> {{ c.name }} ({{ c.email }})
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item bg-dark text-muted">No recent customers</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

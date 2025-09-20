@@ -1,9 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container py-5 d-flex justify-content-center">
-    <div class="card auth-card shadow-lg w-100 bg-dark text-light" style="max-width: 600px;">
+    <div class="card shadow-lg bg-dark text-light w-100" style="max-width: 600px;">
         <div class="card-body">
-            <!-- Title -->
             <h2 class="fw-bold mb-4 text-center text-light">
                 {% if form.instance.pk %}
                 <i class="bi bi-pencil-square text-danger"></i> Edit Customer
@@ -12,18 +11,22 @@
                 {% endif %}
             </h2>
 
-            <!-- Form -->
-            <form method="post" class="text-start">
+            <form method="post" novalidate>
                 {% csrf_token %}
-                {{ form.as_p }}
+                {% for field in form %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                    <div class="text-danger small">{{ field.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
                 <div class="d-grid mt-3">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-save"></i> Save
-                    </button>
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-save"></i> Save</button>
                 </div>
             </form>
 
-            <!-- Back Button -->
             <div class="text-center mt-4">
                 <a href="{% url 'customers:customer_list' %}" class="btn btn-outline-light">
                     <i class="bi bi-arrow-left-circle"></i> Back to Customers

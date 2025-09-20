@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-lg bg-dark text-light w-100" style="max-width: 700px;">
+        <div class="card-body">
+            <h2 class="fw-bold text-danger mb-4">
+                <i class="bi bi-person-circle"></i> {{ customer.name }}
+            </h2>
+            <p><i class="bi bi-envelope"></i> {{ customer.email }}</p>
+            <p><i class="bi bi-telephone"></i> {{ customer.phone|default:"-" }}</p>
+            <p><i class="bi bi-geo-alt"></i> {{ customer.address|default:"-" }}</p>
+            <p><i class="bi bi-calendar"></i> Joined: {{ customer.created_at|date:"M d, Y" }}</p>
+
+            <div class="mt-4 d-flex justify-content-between">
+                <a href="{% url 'customers:edit' customer.id %}" class="btn btn-outline-warning">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="{% url 'customers:delete' customer.id %}" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+                <a href="{% url 'customers:list' %}" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

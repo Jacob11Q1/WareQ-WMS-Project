@@ -1,86 +1,88 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container py-5">
-    <h2 class="fw-bold mb-4 text-center text-light">
-        <i class="bi bi-box-seam text-danger"></i> Inventory
-    </h2>
 
-    <!-- Stats Overview -->
-    <div class="row g-4 mb-5 text-center">
-        <div class="col-md-4">
-            <div class="card p-4 stat-card shadow-sm text-light">
-                <i class="bi bi-box display-5 text-danger mb-2"></i>
-                <h2 class="fw-bold">{{ items.count }}</h2>
-                <p class="mb-0">Total Items</p>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-light">
+            <i class="bi bi-box-seam text-danger"></i> Inventory
+        </h2>
+        <a href="{% url 'inventory:item_create' %}" class="btn btn-danger">
+            <i class="bi bi-plus-circle"></i> Add Item
+        </a>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-4 mb-4 text-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg bg-dark text-light h-100">
+                <div class="card-body">
+                    <i class="bi bi-box display-6 text-danger mb-2"></i>
+                    <h2 class="fw-bold text-danger">{{ total_items }}</h2>
+                    <p class="mb-0">Total Items</p>
+                </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card p-4 stat-card shadow-sm text-light">
-                <i class="bi bi-exclamation-triangle-fill display-5 text-danger mb-2"></i>
-                <h2 class="fw-bold">{{ low_stock }}</h2>
-                <p class="mb-0">Low Stock (≤ 5)</p>
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg bg-dark text-light h-100">
+                <div class="card-body">
+                    <i class="bi bi-exclamation-triangle-fill display-6 text-danger mb-2"></i>
+                    <h2 class="fw-bold text-danger">{{ low_stock }}</h2>
+                    <p class="mb-0">Low Stock (≤ 5)</p>
+                </div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <a href="{% url 'inventory:add' %}" class="card p-4 stat-card shadow-sm text-light text-decoration-none">
-                <i class="bi bi-plus-circle display-5 text-danger mb-2"></i>
-                <h5 class="fw-bold text-light">Add New Item</h5>
-            </a>
         </div>
     </div>
 
-    <!-- Items Table -->
+    <!-- Recent Items Table -->
     <div class="card shadow-lg bg-dark text-light">
-        <div class="card-body">
-            <h5 class="fw-bold text-danger mb-3">
-                <i class="bi bi-table"></i> Item List
-            </h5>
-            <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th><i class="bi bi-hash"></i></th>
-                            <th><i class="bi bi-upc"></i> SKU</th>
-                            <th><i class="bi bi-box"></i> Name</th>
-                            <th><i class="bi bi-123"></i> Quantity</th>
-                            <th><i class="bi bi-cash-stack"></i> Price</th>
-                            <th><i class="bi bi-truck"></i> Supplier</th>
-                            <th><i class="bi bi-tools"></i> Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in items %}
-                        <tr>
-                            <td>#{{ item.id }}</td>
-                            <td>{{ item.sku }}</td>
-                            <td>{{ item.name }}</td>
-                            <td>
-                                {% if item.quantity <= 5 %} <span class="badge bg-danger">
-                                    <i class="bi bi-exclamation-circle"></i> {{ item.quantity }}
-                                    </span>
-                                    {% else %}
-                                    {{ item.quantity }}
-                                    {% endif %}
-                            </td>
-                            <td>${{ item.price }}</td>
-                            <td>{{ item.supplier|default:"-" }}</td>
-                            <td>
-                                <a href="{% url 'inventory:edit' item.id %}" class="btn btn-sm btn-outline-light">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <a href="{% url 'inventory:delete' item.id %}" class="btn btn-sm btn-danger">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="text-center text-muted">No items found.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+        <div class="card-body table-responsive">
+            <h5 class="fw-bold text-danger mb-3"><i class="bi bi-clock-history"></i> Latest Items</h5>
+            <table class="table table-dark table-hover align-middle mb-0">
+                <thead class="text-danger">
+                    <tr>
+                        <th>#</th>
+                        <th><i class="bi bi-upc"></i> SKU</th>
+                        <th><i class="bi bi-box"></i> Name</th>
+                        <th><i class="bi bi-123"></i> Quantity</th>
+                        <th><i class="bi bi-cash-stack"></i> Price</th>
+                        <th><i class="bi bi-truck"></i> Supplier</th>
+                        <th><i class="bi bi-tools"></i> Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items|slice:":5" %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ item.sku }}</td>
+                        <td><a href="{% url 'inventory:item_detail' item.id %}" class="text-light">{{ item.name }}</a>
+                        </td>
+                        <td>
+                            {% if item.quantity <= 5 %} <span class="badge bg-danger"><i
+                                    class="bi bi-exclamation-circle"></i> {{ item.quantity }}</span>
+                                {% else %}
+                                {{ item.quantity }}
+                                {% endif %}
+                        </td>
+                        <td>${{ item.price }}</td>
+                        <td>{{ item.supplier|default:"-" }}</td>
+                        <td>
+                            <a href="{% url 'inventory:item_update' item.id %}"
+                                class="btn btn-sm btn-outline-light me-1">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'inventory:item_delete' item.id %}" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">No items found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

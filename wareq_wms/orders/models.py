@@ -3,19 +3,18 @@ from customers.models import Customer
 from suppliers.models import Supplier
 from inventory.models import Item
 
-# Create your models here.
 
 class Order(models.Model):
     ORDER_TYPES = (
-        ('SALE', 'Sale'),
-        ('PURCHASE', 'Purchase'),
+        ("SALE", "Sale"),
+        ("PURCHASE", "Purchase"),
     )
 
     STATUS_CHOICES = (
-        ('PENDING', 'Pending'),
-        ('PROCESSING', 'Processing'),
-        ('COMPLETED', 'Completed'),
-        ('CANCELLED', 'Cancelled'),
+        ("PENDING", "Pending"),
+        ("PROCESSING", "Processing"),
+        ("COMPLETED", "Completed"),
+        ("CANCELLED", "Cancelled"),
     )
 
     order_type = models.CharField(max_length=10, choices=ORDER_TYPES)
@@ -25,6 +24,10 @@ class Order(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def total_amount(self):
+        return sum(item.total_price for item in self.items.all())
 
     def __str__(self):
         return f"Order #{self.id} - {self.order_type} ({self.status})"
@@ -40,5 +43,10 @@ class OrderItem(models.Model):
     def total_price(self):
         return self.quantity * self.price
 
+    def save(self, *args, **kwargs):
+        if not self.price:  # auto-fill from inventory
+            self.price = self.item.price
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"{self.quantity} × {self.item.name} (Order {self.order.id})"
+        return f"{self.quantity} * {self.item.name} (Order {self.order.id})"

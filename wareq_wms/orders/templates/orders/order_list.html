@@ -2,12 +2,8 @@
 {% block content %}
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-light">
-            <i class="bi bi-receipt-cutoff text-danger"></i> Orders
-        </h2>
-        <a href="{% url 'orders:order_add' %}" class="btn btn-danger">
-            <i class="bi bi-cart-plus"></i> New Order
-        </a>
+        <h2 class="fw-bold text-light"><i class="bi bi-receipt-cutoff text-danger"></i> Orders</h2>
+        <a href="{% url 'orders:order_create' %}" class="btn btn-danger"><i class="bi bi-cart-plus"></i> New Order</a>
     </div>
 
     <div class="card shadow-lg stat-card">
@@ -15,13 +11,14 @@
             <table class="table table-dark table-hover align-middle mb-0">
                 <thead class="text-danger">
                     <tr>
-                        <th><i class="bi bi-hash"></i></th>
-                        <th><i class="bi bi-tags"></i> Type</th>
-                        <th><i class="bi bi-check2-circle"></i> Status</th>
-                        <th><i class="bi bi-person-circle"></i> Customer</th>
-                        <th><i class="bi bi-truck"></i> Supplier</th>
-                        <th><i class="bi bi-calendar-event"></i> Date</th>
-                        <th><i class="bi bi-tools"></i> Actions</th>
+                        <th>#</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Customer</th>
+                        <th>Supplier</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,40 +27,38 @@
                         <td>{{ forloop.counter }}</td>
                         <td>
                             {% if order.order_type == "SALE" %}
-                            <span class="badge bg-success"><i class="bi bi-arrow-up-circle"></i> Sale</span>
+                            <span class="badge bg-success">Sale</span>
                             {% else %}
-                            <span class="badge bg-info"><i class="bi bi-arrow-down-circle"></i> Purchase</span>
+                            <span class="badge bg-info">Purchase</span>
                             {% endif %}
                         </td>
                         <td>
-                            {% if order.status == "Completed" %}
-                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> {{ order.status }}</span>
-                            {% elif order.status == "Pending" %}
-                            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> {{
-                                order.status }}</span>
+                            {% if order.status == "COMPLETED" %}
+                            <span class="badge bg-success">{{ order.status }}</span>
+                            {% elif order.status == "PENDING" %}
+                            <span class="badge bg-warning text-dark">{{ order.status }}</span>
+                            {% elif order.status == "PROCESSING" %}
+                            <span class="badge bg-primary">{{ order.status }}</span>
                             {% else %}
-                            <span class="badge bg-secondary"><i class="bi bi-x-circle"></i> {{ order.status }}</span>
+                            <span class="badge bg-secondary">{{ order.status }}</span>
                             {% endif %}
                         </td>
                         <td>{{ order.customer|default:"-" }}</td>
                         <td>{{ order.supplier|default:"-" }}</td>
+                        <td>${{ order.total_amount }}</td>
                         <td>{{ order.created_at|date:"M d, Y" }}</td>
                         <td>
-                            <a href="{% url 'orders:order_detail' order.id %}"
-                                class="btn btn-sm btn-outline-light me-1">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                            <a href="{% url 'orders:order_edit' order.id %}" class="btn btn-sm btn-outline-danger me-1">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <a href="{% url 'orders:order_delete' order.id %}" class="btn btn-sm btn-danger">
-                                <i class="bi bi-trash"></i>
-                            </a>
+                            <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-sm btn-outline-light"><i
+                                    class="bi bi-eye"></i></a>
+                            <a href="{% url 'orders:order_update' order.id %}" class="btn btn-sm btn-outline-warning"><i
+                                    class="bi bi-pencil"></i></a>
+                            <a href="{% url 'orders:order_delete' order.id %}" class="btn btn-sm btn-outline-danger"><i
+                                    class="bi bi-trash"></i></a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center text-muted">No orders found.</td>
+                        <td colspan="8" class="text-center text-muted">No orders found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

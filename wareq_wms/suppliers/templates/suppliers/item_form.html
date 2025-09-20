@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-lg bg-dark text-light w-100" style="max-width: 650px;">
+        <div class="card-body">
+
+            <!-- Title -->
+            <h2 class="fw-bold text-danger mb-4 text-center">
+                {% if form.instance.pk %}
+                <i class="bi bi-pencil-square"></i> Edit Item
+                {% else %}
+                <i class="bi bi-box-seam"></i> Add Item
+                {% endif %}
+            </h2>
+
+            <!-- Item Form -->
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Item Name -->
+                <div class="mb-3">
+                    {{ form.name.label_tag }}
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-light"><i class="bi bi-tag"></i></span>
+                        {{ form.name }}
+                    </div>
+                </div>
+
+                <!-- SKU -->
+                <div class="mb-3">
+                    {{ form.sku.label_tag }}
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-light"><i class="bi bi-upc-scan"></i></span>
+                        {{ form.sku }}
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-3">
+                    {{ form.description.label_tag }}
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-light"><i class="bi bi-card-text"></i></span>
+                        {{ form.description }}
+                    </div>
+                </div>
+
+                <!-- Quantity -->
+                <div class="mb-3">
+                    {{ form.quantity.label_tag }}
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-light"><i class="bi bi-123"></i></span>
+                        {{ form.quantity }}
+                    </div>
+                </div>
+
+                <!-- Price -->
+                <div class="mb-3">
+                    {{ form.price.label_tag }}
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-light"><i class="bi bi-currency-dollar"></i></span>
+                        {{ form.price }}
+                    </div>
+                </div>
+
+                <!-- Supplier -->
+                <div class="mb-3">
+                    {{ form.supplier.label_tag }}
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-light"><i class="bi bi-truck"></i></span>
+                        {{ form.supplier }}
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-save"></i> Save Item
+                    </button>
+                </div>
+            </form>
+
+            <!-- Back Button -->
+            <div class="text-center mt-3">
+                <a href="{% url 'inventory:item_list' %}" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left"></i> Back to Inventory
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -3,26 +3,30 @@
 <div class="container py-5">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-light">
-            <i class="bi bi-people-fill text-danger"></i> Customers
-        </h2>
+        <h2 class="fw-bold text-light"><i class="bi bi-people-fill text-danger"></i> Customers</h2>
         <a href="{% url 'customers:customer_create' %}" class="btn btn-danger">
             <i class="bi bi-person-plus"></i> Add Customer
         </a>
     </div>
 
-    <!-- Customers Table -->
+    <!-- Search -->
+    <form method="get" class="d-flex mb-3">
+        <input type="text" name="search" class="form-control me-2" placeholder="Search..." value="{{ search }}">
+        <button class="btn btn-danger"><i class="bi bi-search"></i></button>
+    </form>
+
+    <!-- Table -->
     <div class="card shadow-lg bg-dark text-light">
         <div class="card-body table-responsive">
             <table class="table table-dark table-hover align-middle mb-0">
                 <thead>
                     <tr>
-                        <th><i class="bi bi-hash"></i></th>
-                        <th><i class="bi bi-person-circle"></i> Name</th>
-                        <th><i class="bi bi-envelope"></i> Email</th>
-                        <th><i class="bi bi-telephone"></i> Phone</th>
-                        <th><i class="bi bi-geo-alt"></i> Address</th>
-                        <th><i class="bi bi-tools"></i></th>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,10 +36,14 @@
                         <td>{{ customer.name }}</td>
                         <td>{{ customer.email }}</td>
                         <td>{{ customer.phone|default:"-" }}</td>
-                        <td>{{ customer.address|default:"-" }}</td>
+                        <td>{{ customer.created_at|date:"M d, Y" }}</td>
                         <td>
-                            <a href="{% url 'customers:customer_edit' customer.id %}"
+                            <a href="{% url 'customers:customer_detail' customer.id %}"
                                 class="btn btn-sm btn-outline-light me-1">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{% url 'customers:customer_update' customer.id %}"
+                                class="btn btn-sm btn-outline-warning me-1">
                                 <i class="bi bi-pencil"></i>
                             </a>
                             <a href="{% url 'customers:customer_delete' customer.id %}" class="btn btn-sm btn-danger">
@@ -45,9 +53,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center text-muted">
-                            <i class="bi bi-people"></i> No customers found.
-                        </td>
+                        <td colspan="6" class="text-center text-muted">No customers found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

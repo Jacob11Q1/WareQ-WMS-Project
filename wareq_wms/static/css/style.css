@@ -79,6 +79,11 @@ h5 {
     color: var(--accent) !important;
 }
 
+.nav-link.active,
+.nav-link[aria-current="page"] {
+    color: var(--accent) !important;
+}
+
 .nav-link.active::after {
     content: "";
     position: absolute;
@@ -95,6 +100,15 @@ footer {
     background-color: var(--bg-color) !important;
     border-top: 1px solid var(--secondary);
     margin-top: auto;
+}
+
+footer a {
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+footer a:hover {
+    color: var(--accent) !important;
+    transform: translateY(-2px);
 }
 
 /* Cards */
@@ -199,6 +213,22 @@ footer {
     animation: typing 3s steps(30, end) forwards, blink 0.75s step-end infinite;
 }
 
+@keyframes typing {
+    from {
+        width: 0
+    }
+
+    to {
+        width: 100%
+    }
+}
+
+@keyframes blink {
+    50% {
+        border-color: transparent
+    }
+}
+
 /* Auth Pages */
 .auth-wrapper {
     min-height: 100vh;
@@ -230,8 +260,10 @@ footer {
     opacity: 0.9;
 }
 
-/* Inputs */
-.auth-card input {
+/* Inputs (auth + forms globally) */
+form input,
+form textarea,
+form select {
     background: var(--secondary);
     color: var(--text-color) !important;
     border-radius: 8px;
@@ -240,12 +272,15 @@ footer {
     width: 100%;
 }
 
-.auth-card input::placeholder {
+form input::placeholder,
+form textarea::placeholder {
     color: var(--text-color);
     opacity: 0.7;
 }
 
-.auth-card input:focus {
+form input:focus,
+form textarea:focus,
+form select:focus {
     border: 2px solid var(--accent);
     background: var(--card-bg);
     color: var(--text-color) !important;
@@ -263,6 +298,19 @@ footer {
     box-shadow: 0 0 12px rgba(220, 53, 69, 0.7);
 }
 
+.btn-outline-light:hover {
+    background: var(--accent);
+    color: #fff !important;
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.6);
+    border-color: var(--accent);
+}
+
+.btn-outline-danger:hover {
+    background: var(--accent);
+    color: #fff !important;
+    box-shadow: 0 0 12px rgba(220, 53, 69, 0.7);
+}
+
 /* Table Improvements */
 .table-dark th,
 .table-dark td {
@@ -273,21 +321,16 @@ footer {
     background-color: rgba(220, 53, 69, 0.1) !important;
 }
 
-/* Animations */
-@keyframes typing {
-    from {
-        width: 0
-    }
-
-    to {
-        width: 100%
-    }
+/* Dashboard Lists */
+.list-group-item {
+    background: var(--card-bg) !important;
+    border: none;
+    border-bottom: 1px solid var(--secondary);
 }
 
-@keyframes blink {
-    50% {
-        border-color: transparent
-    }
+.list-group-item:hover {
+    background: rgba(220, 53, 69, 0.1) !important;
+    cursor: pointer;
 }
 
 /* Responsive Tweaks */

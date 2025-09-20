@@ -1,37 +1,77 @@
 {% extends "base.html" %}
-{% load static %}
-
 {% block content %}
-<div class="auth-wrapper d-flex justify-content-center align-items-center">
-    <div class="auth-card p-5 shadow-lg">
-        <!-- Logo inside card -->
+<div class="auth-wrapper d-flex justify-content-center align-items-center py-5">
+    <div class="auth-card p-5 shadow-lg text-light bg-dark rounded-3" style="max-width: 400px; width: 100%;">
         <div class="text-center mb-4">
-            <img src="{% static 'images/WareQ_Logo-removebg-preview.png' %}" alt="WareQ Logo" class="auth-logo mb-3" style="width: 150px;">
-            <h2 class="fw-bold text-danger">Register</h2>
-            <p class="auth-subtext">Create your WareQ account</p>
+            <h2 class="fw-bold text-danger"><i class="bi bi-person-plus"></i> Register</h2>
+            <p class="text-muted">Create your account</p>
         </div>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
 
         <form method="post" novalidate>
             {% csrf_token %}
+
             <div class="mb-3">
-                <input type="text" name="username" class="form-control" required placeholder="Choose a username">
+                <label class="form-label fw-semibold">{{ form.username.label }}</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-danger text-light"><i class="bi bi-person"></i></span>
+                    {{ form.username }}
+                </div>
+                {% if form.username.errors %}
+                <div class="text-danger small mt-1">{{ form.username.errors|join:", " }}</div>
+                {% endif %}
             </div>
+
             <div class="mb-3">
-                <input type="email" name="email" class="form-control" required placeholder="Enter your email">
+                <label class="form-label fw-semibold">{{ form.email.label }}</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-danger text-light"><i class="bi bi-envelope"></i></span>
+                    {{ form.email }}
+                </div>
+                {% if form.email.errors %}
+                <div class="text-danger small mt-1">{{ form.email.errors|join:", " }}</div>
+                {% endif %}
             </div>
+
             <div class="mb-3">
-                <input type="password" name="password1" class="form-control" required placeholder="Enter password">
+                <label class="form-label fw-semibold">{{ form.password1.label }}</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-danger text-light"><i class="bi bi-lock"></i></span>
+                    {{ form.password1 }}
+                </div>
+                {% if form.password1.errors %}
+                <div class="text-danger small mt-1">{{ form.password1.errors|join:", " }}</div>
+                {% endif %}
             </div>
+
             <div class="mb-3">
-                <input type="password" name="password2" class="form-control" required placeholder="Re-enter password">
+                <label class="form-label fw-semibold">{{ form.password2.label }}</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-danger text-light"><i class="bi bi-lock-fill"></i></span>
+                    {{ form.password2 }}
+                </div>
+                {% if form.password2.errors %}
+                <div class="text-danger small mt-1">{{ form.password2.errors|join:", " }}</div>
+                {% endif %}
             </div>
-            <div class="d-grid">
-                <button type="submit" class="btn btn-danger">Register</button>
+
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-person-plus"></i> Register
+                </button>
             </div>
         </form>
 
-        <p class="text-center mt-3">
-            Already have an account? 
+        <p class="text-center mt-4 text-muted">
+            Already have an account?
             <a href="{% url 'accounts:login' %}" class="text-danger fw-bold">Login</a>
         </p>
     </div>

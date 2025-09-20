@@ -1,9 +1,12 @@
 {% extends "base.html" %}
+{% load widget_tweaks %}
 {% block content %}
 <div class="container py-5 d-flex justify-content-center">
-    <div class="card auth-card shadow-lg w-100" style="max-width: 600px;">
+    <div class="card shadow-lg w-100 bg-dark text-light" style="max-width: 650px;">
         <div class="card-body">
-            <h2 class="text-danger fw-bold mb-4 text-center">
+
+            <!-- Title -->
+            <h2 class="fw-bold text-danger mb-4 text-center">
                 {% if form.instance.pk %}
                 <i class="bi bi-pencil-square"></i> Edit Supplier
                 {% else %}
@@ -11,40 +14,67 @@
                 {% endif %}
             </h2>
 
-            <form method="post">
+            <!-- Form -->
+            <form method="post" novalidate>
                 {% csrf_token %}
+
+                <!-- Name -->
                 <div class="mb-3">
-                    {{ form.name.label_tag }}
+                    <label class="form-label text-light fw-semibold">{{ form.name.label }}</label>
                     <div class="input-group">
                         <span class="input-group-text bg-danger text-light"><i class="bi bi-building"></i></span>
-                        {{ form.name }}
+                        {{ form.name|add_class:"form-control bg-dark text-light border-secondary" }}
                     </div>
+                    {% if form.name.errors %}
+                    <div class="text-danger small mt-1">
+                        {{ form.name.errors|join:", " }}
+                    </div>
+                    {% endif %}
                 </div>
 
+                <!-- Email -->
                 <div class="mb-3">
-                    {{ form.email.label_tag }}
+                    <label class="form-label text-light fw-semibold">{{ form.email.label }}</label>
                     <div class="input-group">
                         <span class="input-group-text bg-danger text-light"><i class="bi bi-envelope"></i></span>
-                        {{ form.email }}
+                        {{ form.email|add_class:"form-control bg-dark text-light border-secondary" }}
                     </div>
+                    {% if form.email.errors %}
+                    <div class="text-danger small mt-1">
+                        {{ form.email.errors|join:", " }}
+                    </div>
+                    {% endif %}
                 </div>
 
+                <!-- Phone -->
                 <div class="mb-3">
-                    {{ form.phone.label_tag }}
+                    <label class="form-label text-light fw-semibold">{{ form.phone.label }}</label>
                     <div class="input-group">
                         <span class="input-group-text bg-danger text-light"><i class="bi bi-telephone"></i></span>
-                        {{ form.phone }}
+                        {{ form.phone|add_class:"form-control bg-dark text-light border-secondary" }}
                     </div>
+                    {% if form.phone.errors %}
+                    <div class="text-danger small mt-1">
+                        {{ form.phone.errors|join:", " }}
+                    </div>
+                    {% endif %}
                 </div>
 
+                <!-- Address -->
                 <div class="mb-3">
-                    {{ form.address.label_tag }}
+                    <label class="form-label text-light fw-semibold">{{ form.address.label }}</label>
                     <div class="input-group">
                         <span class="input-group-text bg-danger text-light"><i class="bi bi-geo-alt"></i></span>
-                        {{ form.address }}
+                        {{ form.address|add_class:"form-control bg-dark text-light border-secondary" }}
                     </div>
+                    {% if form.address.errors %}
+                    <div class="text-danger small mt-1">
+                        {{ form.address.errors|join:", " }}
+                    </div>
+                    {% endif %}
                 </div>
 
+                <!-- Save Button -->
                 <div class="d-grid mt-4">
                     <button type="submit" class="btn btn-danger">
                         <i class="bi bi-save"></i> Save Supplier
@@ -52,9 +82,10 @@
                 </div>
             </form>
 
-            <div class="text-center mt-3">
+            <!-- Back -->
+            <div class="text-center mt-4">
                 <a href="{% url 'suppliers:supplier_list' %}" class="btn btn-outline-light">
-                    <i class="bi bi-arrow-left"></i> Back to Suppliers
+                    <i class="bi bi-arrow-left-circle"></i> Back to Suppliers
                 </a>
             </div>
         </div>

@@ -61,7 +61,7 @@
         <h2 class="text-center text-danger fw-bold mb-5">Core Features</h2>
         <div class="row g-5 text-center">
             <div class="col-md-4">
-                <a href="{% url 'inventory:index' %}" class="text-decoration-none text-light">
+                <a href="{% url 'inventory:item_list' %}" class="text-decoration-none text-light">
                     <div class="card feature-card h-100 p-4 text-light">
                         <div class="icon"><i class="bi bi-box-seam display-5 text-danger"></i></div>
                         <h5 class="card-title">Inventory</h5>
@@ -70,7 +70,7 @@
                 </a>
             </div>
             <div class="col-md-4">
-                <a href="{% url 'orders:index' %}" class="text-decoration-none text-light">
+                <a href="{% url 'orders:order_list' %}" class="text-decoration-none text-light">
                     <div class="card feature-card h-100 p-4 text-light">
                         <div class="icon"><i class="bi bi-cart-check-fill display-5 text-danger"></i></div>
                         <h5 class="card-title">Orders</h5>
@@ -90,7 +90,7 @@
         </div>
         <div class="row g-5 text-center mt-4">
             <div class="col-md-6">
-                <a href="{% url 'suppliers:index' %}" class="text-decoration-none text-light">
+                <a href="{% url 'suppliers:supplier_list' %}" class="text-decoration-none text-light">
                     <div class="card feature-card h-100 p-4 text-light">
                         <div class="icon"><i class="bi bi-truck display-5 text-danger"></i></div>
                         <h5 class="card-title">Suppliers</h5>
@@ -99,7 +99,7 @@
                 </a>
             </div>
             <div class="col-md-6">
-                <a href="{% url 'customers:index' %}" class="text-decoration-none text-light">
+                <a href="{% url 'customers:customer_list' %}" class="text-decoration-none text-light">
                     <div class="card feature-card h-100 p-4 text-light">
                         <div class="icon"><i class="bi bi-people-fill display-5 text-danger"></i></div>
                         <h5 class="card-title">Customers</h5>
@@ -118,29 +118,29 @@
             <div class="col-md-3">
                 <div class="stat-card p-4">
                     <i class="bi bi-box-seam display-6 text-danger"></i>
-                    <h2 class="fw-bold text-light">10K+</h2>
+                    <h2 class="fw-bold text-light">{{ stats.items_count }}</h2>
                     <p>Items Managed</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stat-card p-4">
                     <i class="bi bi-cart-check-fill display-6 text-danger"></i>
-                    <h2 class="fw-bold text-light">5K+</h2>
+                    <h2 class="fw-bold text-light">{{ stats.orders_count }}</h2>
                     <p>Orders Processed</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stat-card p-4">
-                    <i class="bi bi-building display-6 text-danger"></i>
-                    <h2 class="fw-bold text-light">500+</h2>
-                    <p>Warehouses Supported</p>
+                    <i class="bi bi-people-fill display-6 text-danger"></i>
+                    <h2 class="fw-bold text-light">{{ stats.customers_count }}</h2>
+                    <p>Customers</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="stat-card p-4">
-                    <i class="bi bi-cloud-check-fill display-6 text-danger"></i>
-                    <h2 class="fw-bold text-light">99.9%</h2>
-                    <p>Uptime</p>
+                    <i class="bi bi-truck display-6 text-danger"></i>
+                    <h2 class="fw-bold text-light">{{ stats.suppliers_count }}</h2>
+                    <p>Suppliers</p>
                 </div>
             </div>
         </div>
@@ -210,11 +210,19 @@
 
 <!-- CTA -->
 <section class="py-5 text-center bg-danger text-light">
+    {% if user.is_authenticated %}
+    <h2 class="fw-bold">Welcome back, {{ user.username }}!</h2>
+    <p>Access your dashboard to manage your warehouse.</p>
+    <a href="{% url 'dashboard:index' %}" class="btn btn-light btn-lg">
+        <i class="bi bi-speedometer2"></i> Go to Dashboard
+    </a>
+    {% else %}
     <h2 class="fw-bold">Boost Your Warehouse Efficiency Today!</h2>
     <p>Join hundreds of businesses already using WareQ.</p>
     <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg">
         <i class="bi bi-person-plus-fill"></i> Sign Up Now
     </a>
+    {% endif %}
 </section>
 
 {% endblock %}

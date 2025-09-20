@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-lg bg-dark text-light w-100" style="max-width: 700px;">
+        <div class="card-body">
+
+            <!-- Supplier Header -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h2 class="fw-bold text-danger mb-0">
+                    <i class="bi bi-building"></i> {{ supplier.name }}
+                </h2>
+                <span class="badge bg-danger px-3 py-2">Supplier Profile</span>
+            </div>
+
+            <!-- Supplier Info -->
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item bg-dark text-light">
+                    <i class="bi bi-envelope text-danger"></i>
+                    <span class="fw-semibold">Email:</span> {{ supplier.email }}
+                </li>
+                <li class="list-group-item bg-dark text-light">
+                    <i class="bi bi-telephone text-danger"></i>
+                    <span class="fw-semibold">Phone:</span> {{ supplier.phone|default:"-" }}
+                </li>
+                <li class="list-group-item bg-dark text-light">
+                    <i class="bi bi-geo-alt text-danger"></i>
+                    <span class="fw-semibold">Address:</span> {{ supplier.address|default:"-" }}
+                </li>
+                <li class="list-group-item bg-dark text-light">
+                    <i class="bi bi-clock text-danger"></i>
+                    <span class="fw-semibold">Added on:</span> {{ supplier.created_at|date:"M d, Y" }}
+                </li>
+            </ul>
+
+            <!-- Related Items (if inventory linked later) -->
+            {% if supplier.inventoryitem_set.exists %}
+            <div class="mt-4">
+                <h5 class="fw-bold text-danger"><i class="bi bi-box-seam"></i> Supplied Items</h5>
+                <ul class="list-group">
+                    {% for item in supplier.inventoryitem_set.all %}
+                    <li class="list-group-item bg-dark text-light d-flex justify-content-between">
+                        <span>{{ item.name }}</span>
+                        <span class="badge bg-secondary">{{ item.quantity }} in stock</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            <div class="d-flex gap-2 mt-4">
+                <a href="{% url 'suppliers:supplier_update' supplier.id %}" class="btn btn-outline-light">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="{% url 'suppliers:supplier_delete' supplier.id %}" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+                <a href="{% url 'suppliers:supplier_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

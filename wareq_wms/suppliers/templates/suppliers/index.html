@@ -1,48 +1,82 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container py-5">
+
+    <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-light">
-            <i class="bi bi-truck text-danger"></i> Suppliers
+            <i class="bi bi-truck text-danger"></i> Suppliers Dashboard
         </h2>
-        <a href="{% url 'suppliers:supplier_add' %}" class="btn btn-danger">
-            <i class="bi bi-person-plus"></i> Add Supplier
+        <a href="{% url 'suppliers:supplier_create' %}" class="btn btn-danger">
+            <i class="bi bi-plus-circle"></i> Add Supplier
         </a>
     </div>
 
-    <!-- Stat Card -->
-    <div class="card shadow-lg stat-card mb-4 text-center">
-        <div class="card-body">
-            <i class="bi bi-buildings display-6 text-danger"></i>
-            <h2 class="fw-bold text-danger mt-2">{{ total_suppliers }}</h2>
-            <p class="mb-0">Total Suppliers</p>
+    <!-- Stat Cards Row -->
+    <div class="row mb-4 g-3">
+        <!-- Total Suppliers -->
+        <div class="col-md-4">
+            <div class="card shadow-lg bg-dark text-light text-center">
+                <div class="card-body">
+                    <i class="bi bi-buildings display-6 text-danger"></i>
+                    <h3 class="fw-bold text-danger mt-2">{{ total_suppliers }}</h3>
+                    <p class="mb-0">Total Suppliers</p>
+                </div>
+            </div>
+        </div>
+        <!-- Recent Added -->
+        <div class="col-md-4">
+            <div class="card shadow-lg bg-dark text-light text-center">
+                <div class="card-body">
+                    <i class="bi bi-person-plus display-6 text-danger"></i>
+                    <h3 class="fw-bold text-danger mt-2">{{ recent_suppliers.count }}</h3>
+                    <p class="mb-0">Added This Month</p>
+                </div>
+            </div>
+        </div>
+        <!-- Items Linked -->
+        <div class="col-md-4">
+            <div class="card shadow-lg bg-dark text-light text-center">
+                <div class="card-body">
+                    <i class="bi bi-box-seam display-6 text-danger"></i>
+                    <h3 class="fw-bold text-danger mt-2">{{ total_items }}</h3>
+                    <p class="mb-0">Items Linked</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Supplier Table -->
-    <div class="card shadow-lg stat-card">
+    <!-- Recent Suppliers Table -->
+    <div class="card shadow-lg bg-dark text-light mb-4">
         <div class="card-body table-responsive">
+            <h4 class="fw-bold text-danger mb-3">
+                <i class="bi bi-clock-history"></i> Recent Suppliers
+            </h4>
             <table class="table table-dark table-hover align-middle mb-0">
                 <thead class="text-danger">
                     <tr>
-                        <th><i class="bi bi-hash"></i></th>
+                        <th>#</th>
                         <th><i class="bi bi-building"></i> Name</th>
                         <th><i class="bi bi-envelope"></i> Email</th>
                         <th><i class="bi bi-telephone"></i> Phone</th>
-                        <th><i class="bi bi-geo-alt"></i> Address</th>
+                        <th><i class="bi bi-box"></i> Items Supplied</th>
                         <th><i class="bi bi-tools"></i> Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for supplier in suppliers %}
+                    {% for supplier in recent_suppliers %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ supplier.name }}</td>
                         <td>{{ supplier.email }}</td>
                         <td>{{ supplier.phone|default:"-" }}</td>
-                        <td>{{ supplier.address|default:"-" }}</td>
+                        <td>{{ supplier.item_set.count }}</td>
                         <td>
-                            <a href="{% url 'suppliers:supplier_edit' supplier.id %}"
+                            <a href="{% url 'suppliers:supplier_detail' supplier.id %}"
+                                class="btn btn-sm btn-outline-light me-1">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{% url 'suppliers:supplier_update' supplier.id %}"
                                 class="btn btn-sm btn-outline-light me-1">
                                 <i class="bi bi-pencil"></i>
                             </a>
@@ -53,12 +87,23 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center text-muted">No suppliers found.</td>
+                        <td colspan="6" class="text-center text-muted">No recent suppliers found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+
+    <!-- Quick Actions -->
+    <div class="d-flex justify-content-center gap-3">
+        <a href="{% url 'suppliers:supplier_list' %}" class="btn btn-outline-light">
+            <i class="bi bi-list-ul"></i> View All Suppliers
+        </a>
+        <a href="{% url 'inventory:item_create' %}" class="btn btn-danger">
+            <i class="bi bi-box-seam"></i> Add Item for Supplier
+        </a>
+    </div>
+
 </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container py-5 d-flex justify-content-center">
-    <div class="card auth-card shadow-lg w-100" style="max-width: 600px;">
+    <div class="card shadow-lg bg-dark text-light w-100" style="max-width: 600px;">
         <div class="card-body">
             <!-- Title -->
             <h2 class="text-danger fw-bold mb-4 text-center">
@@ -13,42 +13,65 @@
             </h2>
 
             <!-- Form -->
-            <form method="post" class="text-start">
+            <form method="post">
                 {% csrf_token %}
 
-                <!-- Custom Styled Form Fields -->
+                <!-- SKU -->
                 <div class="mb-3">
                     <label for="id_sku" class="form-label">
                         <i class="bi bi-upc"></i> SKU
                     </label>
-                    {{ form.sku }}
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-light"><i class="bi bi-upc"></i></span>
+                        {{ form.sku }}
+                    </div>
+                    {% if form.sku.errors %}
+                    <div class="text-danger small">{{ form.sku.errors|join:", " }}</div>
+                    {% endif %}
                 </div>
 
+                <!-- Name -->
                 <div class="mb-3">
-                    <label for="id_name" class="form-label">
-                        <i class="bi bi-box"></i> Name
-                    </label>
-                    {{ form.name }}
+                    <label for="id_name" class="form-label"><i class="bi bi-box"></i> Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-light"><i class="bi bi-box"></i></span>
+                        {{ form.name }}
+                    </div>
+                    {% if form.name.errors %}
+                    <div class="text-danger small">{{ form.name.errors|join:", " }}</div>
+                    {% endif %}
                 </div>
 
+                <!-- Description -->
                 <div class="mb-3">
-                    <label for="id_quantity" class="form-label">
-                        <i class="bi bi-123"></i> Quantity
-                    </label>
-                    {{ form.quantity }}
+                    <label for="id_description" class="form-label"><i class="bi bi-card-text"></i> Description</label>
+                    {{ form.description }}
                 </div>
 
+                <!-- Quantity -->
                 <div class="mb-3">
-                    <label for="id_price" class="form-label">
-                        <i class="bi bi-cash-stack"></i> Price
-                    </label>
-                    {{ form.price }}
+                    <label for="id_quantity" class="form-label"><i class="bi bi-123"></i> Quantity</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-light"><i class="bi bi-123"></i></span>
+                        {{ form.quantity }}
+                    </div>
+                    {% if form.quantity.errors %}
+                    <div class="text-danger small">{{ form.quantity.errors|join:", " }}</div>
+                    {% endif %}
                 </div>
 
+                <!-- Price -->
                 <div class="mb-3">
-                    <label for="id_supplier" class="form-label">
-                        <i class="bi bi-truck"></i> Supplier
-                    </label>
+                    <label for="id_price" class="form-label"><i class="bi bi-cash-stack"></i> Price</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-danger text-light"><i class="bi bi-cash-stack"></i></span>
+                        {{ form.price }}
+                    </div>
+                </div>
+
+                <!-- Supplier -->
+                <div class="mb-3">
+                    <label for="id_supplier" class="form-label"><i class="bi bi-truck"></i> Supplier</label>
                     {{ form.supplier }}
                 </div>
 
@@ -60,9 +83,9 @@
                 </div>
             </form>
 
-            <!-- Back Button -->
+            <!-- Back -->
             <div class="text-center mt-3">
-                <a href="{% url 'inventory:index' %}" class="btn btn-outline-light">
+                <a href="{% url 'inventory:item_list' %}" class="btn btn-outline-light">
                     <i class="bi bi-arrow-left-circle"></i> Back to Inventory
                 </a>
             </div>
