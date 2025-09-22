@@ -2,7 +2,6 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import User
 
-
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={"class": "form-control", "placeholder": "Enter your email"})
@@ -16,7 +15,6 @@ class RegisterForm(UserCreationForm):
             "password1": forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter password"}),
             "password2": forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Re-enter password"}),
         }
-
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(

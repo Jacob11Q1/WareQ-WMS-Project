@@ -5,15 +5,20 @@
     <div class="card shadow-lg stat-card w-100" style="max-width: 900px;">
         <div class="card-body">
             <h2 class="fw-bold mb-4 text-center text-light">
-                {% if form.instance.pk %}<i class="bi bi-pencil-square text-danger"></i> Edit Order
-                {% else %}<i class="bi bi-cart-plus text-danger"></i> New Order{% endif %}
+                {% if form.instance.pk %}
+                <i class="bi bi-pencil-square text-danger"></i> Edit Order
+                {% else %}
+                <i class="bi bi-cart-plus text-danger"></i> New Order
+                {% endif %}
             </h2>
 
-            <form method="post">
+            <form method="post" id="orderForm">
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-md-6 mb-3">{{ form.order_type }}</div>
+                    {% if form.instance.pk %}
                     <div class="col-md-6 mb-3">{{ form.status }}</div>
+                    {% endif %}
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">{{ form.customer }}</div>
@@ -22,25 +27,39 @@
 
                 <h4 class="text-danger mt-4">Order Items</h4>
                 {{ formset.management_form }}
-                <table class="table table-dark">
+                <table class="table table-dark" id="orderItemsTable">
                     <thead>
                         <tr>
                             <th>Item</th>
                             <th>Qty</th>
                             <th>Price</th>
+                            <th>Total</th>
                             <th>Delete?</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for form in formset %}
                         <tr>
-                            <td>{{ form.item }}</td>
+                            <td>
+                                <!-- AJAX item search -->
+                                <input type="text" class="form-control item-search" placeholder="Search item..."
+                                    data-input-id="{{ form.item.id_for_label }}">
+                                {{ form.item }}
+                            </td>
                             <td>{{ form.quantity }}</td>
-                            <td>{{ form.price }}</td>
+                            <td class="price-field">{{ form.price }}</td>
+                            <td class="row-total">$0.00</td>
                             <td>{{ form.DELETE }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3" class="text-end">Grand Total</th>
+                            <th id="grandTotal">$0.00</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
                 </table>
 
                 <div class="d-grid">
@@ -50,4 +69,61 @@
         </div>
     </div>
 </div>
+
+<!-- AJAX Item Search + Live Totals -->
+<script>
+    document.querySelectorAll(".item-search").forEach(input => {
+        input.addEventListener("keyup", function () {
+            const q = this.value;
+            const hiddenInputId = this.dataset.inputId;
+            if (q.length < 2) return;
+
+            fetch(`/orders/search-items/?q=${q}`)
+                .then(res => res.json())
+                .then(items => {
+                    if (items.length > 0) {
+                        let dropdown = document.createElement("ul");
+                        dropdown.className = "list-group position-absolute";
+                        dropdown.style.zIndex = "1000";
+                        dropdown.style.width = this.offsetWidth + "px";
+
+                        items.forEach(item => {
+                            let li = document.createElement("li");
+                            li.className = "list-group-item list-group-item-action";
+                            li.textContent = `${item.name} ($${item.price})`;
+                            li.addEventListener("click", () => {
+                                document.getElementById(hiddenInputId).value = item.id;
+                                this.value = item.name;
+                                dropdown.remove();
+                                this.closest("tr").querySelector(".price-field input").value = item.price;
+                                updateTotals();
+                            });
+                            dropdown.appendChild(li);
+                        });
+
+                        this.parentNode.appendChild(dropdown);
+                    }
+                });
+        });
+    });
+
+    // Live total calculation
+    function updateTotals() {
+        let grandTotal = 0;
+        document.querySelectorAll("#orderItemsTable tbody tr").forEach(row => {
+            const qty = parseFloat(row.querySelector("input[name$='quantity']").value) || 0;
+            const price = parseFloat(row.querySelector("input[name$='price']").value) || 0;
+            const total = qty * price;
+            row.querySelector(".row-total").textContent = `$${total.toFixed(2)}`;
+            grandTotal += total;
+        });
+        document.getElementById("grandTotal").textContent = `$${grandTotal.toFixed(2)}`;
+    }
+
+    // Trigger live total updates
+    document.querySelectorAll("input[name$='quantity'], input[name$='price']").forEach(input => {
+        input.addEventListener("input", updateTotals);
+    });
+    updateTotals();
+</script>
 {% endblock %}

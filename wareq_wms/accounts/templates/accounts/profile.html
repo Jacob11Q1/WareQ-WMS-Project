@@ -3,7 +3,9 @@
 <div class="container py-5 d-flex justify-content-center">
     <div class="card p-4 shadow-lg bg-dark text-light text-center" style="max-width: 600px;">
         <h2 class="fw-bold text-danger"><i class="bi bi-person-circle"></i> {{ user.username }}</h2>
-        <p>Role: <span class="badge bg-danger">{{ user.role }}</span></p>
+        <p>
+            <span class="badge {{ user.role|role_badge }}">{{ user.role|title }}</span>
+        </p>
         <hr>
         <p><i class="bi bi-envelope"></i> {{ user.email }}</p>
         <p><i class="bi bi-calendar"></i> Member since: {{ user.date_joined|date:"F j, Y" }}</p>

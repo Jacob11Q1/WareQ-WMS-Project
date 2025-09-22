@@ -9,36 +9,54 @@
     <!-- Stats Row -->
     <div class="row g-4 mb-4 text-center">
         <div class="col-md-3">
-            <div class="card stat-card p-4 shadow-sm">
-                <i class="bi bi-arrow-up-circle text-success display-6 mb-2"></i>
-                <h2 class="fw-bold text-light">{{ sales_count }}</h2>
-                <p class="mb-0">Sales Orders</p>
-            </div>
+            <a href="?status=SALE" class="text-decoration-none">
+                <div class="card stat-card p-4 shadow-sm">
+                    <i class="bi bi-arrow-up-circle text-success display-6 mb-2"></i>
+                    <h2 class="fw-bold text-light">{{ sales_count }}</h2>
+                    <p class="mb-0">Sales Orders</p>
+                </div>
+            </a>
         </div>
         <div class="col-md-3">
-            <div class="card stat-card p-4 shadow-sm">
-                <i class="bi bi-arrow-down-circle text-info display-6 mb-2"></i>
-                <h2 class="fw-bold text-light">{{ purchase_count }}</h2>
-                <p class="mb-0">Purchase Orders</p>
-            </div>
+            <a href="?status=PURCHASE" class="text-decoration-none">
+                <div class="card stat-card p-4 shadow-sm">
+                    <i class="bi bi-arrow-down-circle text-info display-6 mb-2"></i>
+                    <h2 class="fw-bold text-light">{{ purchase_count }}</h2>
+                    <p class="mb-0">Purchase Orders</p>
+                </div>
+            </a>
         </div>
         <div class="col-md-3">
-            <div class="card stat-card p-4 shadow-sm">
-                <i class="bi bi-hourglass-split text-warning display-6 mb-2"></i>
-                <h2 class="fw-bold text-light">{{ pending_count }}</h2>
-                <p class="mb-0">Pending Orders</p>
-            </div>
+            <a href="?status=PENDING" class="text-decoration-none">
+                <div class="card stat-card p-4 shadow-sm">
+                    <i class="bi bi-hourglass-split text-warning display-6 mb-2"></i>
+                    <h2 class="fw-bold text-light">{{ pending_count }}</h2>
+                    <p class="mb-0">Pending Orders</p>
+                </div>
+            </a>
         </div>
         <div class="col-md-3">
-            <div class="card stat-card p-4 shadow-sm">
-                <i class="bi bi-check2-circle text-primary display-6 mb-2"></i>
-                <h2 class="fw-bold text-light">{{ completed_count }}</h2>
-                <p class="mb-0">Completed Orders</p>
-            </div>
+            <a href="?status=COMPLETED" class="text-decoration-none">
+                <div class="card stat-card p-4 shadow-sm">
+                    <i class="bi bi-check2-circle text-primary display-6 mb-2"></i>
+                    <h2 class="fw-bold text-light">{{ completed_count }}</h2>
+                    <p class="mb-0">Completed Orders</p>
+                </div>
+            </a>
         </div>
     </div>
 
-    <!-- Orders Table -->
+    <!-- Low Stock Alert -->
+    {% if low_stock_items %}
+    <div class="alert alert-danger">
+        Low Stock Alert:
+        {% for item in low_stock_items %}
+        {{ item.name }} ({{ item.quantity }} left){% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Recent Orders Table -->
     <div class="card shadow-lg">
         <div class="card-body table-responsive">
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -55,22 +73,33 @@
                     <tr>
                         <th>#</th>
                         <th>Type</th>
-                        <th>Customer / Supplier</th>
                         <th>Status</th>
+                        <th>Customer / Supplier</th>
                         <th>Total</th>
                         <th>Date</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for order in orders %}
+                    {% for order in recent_orders %}
                     <tr>
                         <td>#{{ order.id }}</td>
                         <td>
                             {% if order.order_type == "SALE" %}
-                            <span class="badge bg-success"><i class="bi bi-arrow-up-circle"></i> Sale</span>
+                            <span class="badge bg-success">Sale</span>
                             {% else %}
-                            <span class="badge bg-info"><i class="bi bi-arrow-down-circle"></i> Purchase</span>
+                            <span class="badge bg-info">Purchase</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if order.status == "COMPLETED" %}
+                            <span class="badge bg-success">Completed</span>
+                            {% elif order.status == "PENDING" %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                            {% elif order.status == "PROCESSING" %}
+                            <span class="badge bg-primary">Processing</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Cancelled</span>
                             {% endif %}
                         </td>
                         <td>
@@ -80,37 +109,17 @@
                             {{ order.supplier|default:"-" }}
                             {% endif %}
                         </td>
-                        <td>
-                            {% if order.status == "COMPLETED" %}
-                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Completed</span>
-                            {% elif order.status == "PENDING" %}
-                            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i>
-                                Pending</span>
-                            {% elif order.status == "PROCESSING" %}
-                            <span class="badge bg-primary"><i class="bi bi-gear"></i> Processing</span>
-                            {% else %}
-                            <span class="badge bg-secondary"><i class="bi bi-x-circle"></i> Cancelled</span>
-                            {% endif %}
-                        </td>
                         <td>${{ order.total_amount }}</td>
                         <td>{{ order.created_at|date:"M d, Y" }}</td>
                         <td>
-                            <a href="{% url 'orders:order_detail' order.id %}"
-                                class="btn btn-sm btn-outline-light me-1">
+                            <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-sm btn-outline-light">
                                 <i class="bi bi-eye"></i>
-                            </a>
-                            <a href="{% url 'orders:order_update' order.id %}"
-                                class="btn btn-sm btn-outline-warning me-1">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <a href="{% url 'orders:order_delete' order.id %}" class="btn btn-sm btn-outline-danger">
-                                <i class="bi bi-trash"></i>
                             </a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center text-muted">No orders found.</td>
+                        <td colspan="7" class="text-center text-muted">No recent orders.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

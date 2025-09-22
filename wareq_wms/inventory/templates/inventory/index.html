@@ -3,18 +3,13 @@
 <div class="container py-5">
 
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-light">
-            <i class="bi bi-box-seam text-danger"></i> Inventory
-        </h2>
-        <a href="{% url 'inventory:item_create' %}" class="btn btn-danger">
-            <i class="bi bi-plus-circle"></i> Add Item
-        </a>
-    </div>
+    <h2 class="fw-bold text-light mb-4">
+        <i class="bi bi-box-seam text-danger"></i> Inventory Dashboard
+    </h2>
 
     <!-- Stat Cards -->
     <div class="row g-4 mb-4 text-center">
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-4">
             <div class="card shadow-lg bg-dark text-light h-100">
                 <div class="card-body">
                     <i class="bi bi-box display-6 text-danger mb-2"></i>
@@ -23,67 +18,103 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-4">
             <div class="card shadow-lg bg-dark text-light h-100">
                 <div class="card-body">
-                    <i class="bi bi-exclamation-triangle-fill display-6 text-danger mb-2"></i>
-                    <h2 class="fw-bold text-danger">{{ low_stock }}</h2>
+                    <i class="bi bi-exclamation-triangle-fill display-6 text-warning mb-2"></i>
+                    <h2 class="fw-bold text-warning">{{ low_stock }}</h2>
                     <p class="mb-0">Low Stock (≤ 5)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-lg bg-dark text-light h-100">
+                <div class="card-body">
+                    <i class="bi bi-slash-circle display-6 text-secondary mb-2"></i>
+                    <h2 class="fw-bold text-secondary">{{ out_of_stock }}</h2>
+                    <p class="mb-0">Out of Stock</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Recent Items Table -->
-    <div class="card shadow-lg bg-dark text-light">
-        <div class="card-body table-responsive">
-            <h5 class="fw-bold text-danger mb-3"><i class="bi bi-clock-history"></i> Latest Items</h5>
+    <!-- Low Stock Items -->
+    <div class="card shadow-lg bg-dark text-light mb-4">
+        <div class="card-body">
+            <h5 class="fw-bold text-danger mb-3">
+                <i class="bi bi-exclamation-circle"></i> Low Stock Items
+            </h5>
             <table class="table table-dark table-hover align-middle mb-0">
                 <thead class="text-danger">
                     <tr>
-                        <th>#</th>
-                        <th><i class="bi bi-upc"></i> SKU</th>
-                        <th><i class="bi bi-box"></i> Name</th>
-                        <th><i class="bi bi-123"></i> Quantity</th>
-                        <th><i class="bi bi-cash-stack"></i> Price</th>
-                        <th><i class="bi bi-truck"></i> Supplier</th>
-                        <th><i class="bi bi-tools"></i> Actions</th>
+                        <th>SKU</th>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Supplier</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in items|slice:":5" %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
+                    {% for item in items %}
+                    {% if item.quantity <= 5 %} <tr>
                         <td>{{ item.sku }}</td>
                         <td><a href="{% url 'inventory:item_detail' item.id %}" class="text-light">{{ item.name }}</a>
                         </td>
-                        <td>
-                            {% if item.quantity <= 5 %} <span class="badge bg-danger"><i
-                                    class="bi bi-exclamation-circle"></i> {{ item.quantity }}</span>
-                                {% else %}
-                                {{ item.quantity }}
-                                {% endif %}
-                        </td>
-                        <td>${{ item.price }}</td>
+                        <td><span class="badge bg-danger">{{ item.quantity }}</span></td>
                         <td>{{ item.supplier|default:"-" }}</td>
+                        </tr>
+                        {% endif %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No items found.</td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Stock Movements -->
+    <div class="card shadow-lg bg-dark text-light">
+        <div class="card-body">
+            <h5 class="fw-bold text-danger mb-3">
+                <i class="bi bi-clock-history"></i> Recent Stock Movements
+            </h5>
+            <table class="table table-dark table-hover align-middle mb-0">
+                <thead class="text-danger">
+                    <tr>
+                        <th>Item</th>
+                        <th>Change</th>
+                        <th>Old → New</th>
+                        <th>Reason</th>
+                        <th>By</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for move in recent_movements %}
+                    <tr>
+                        <td>{{ move.item.name }} ({{ move.item.sku }})</td>
                         <td>
-                            <a href="{% url 'inventory:item_update' item.id %}"
-                                class="btn btn-sm btn-outline-light me-1">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <a href="{% url 'inventory:item_delete' item.id %}" class="btn btn-sm btn-danger">
-                                <i class="bi bi-trash"></i>
-                            </a>
+                            {% if move.change > 0 %}
+                            <span class="text-success">+{{ move.change }}</span>
+                            {% else %}
+                            <span class="text-danger">{{ move.change }}</span>
+                            {% endif %}
                         </td>
+                        <td>{{ move.old_quantity }} → {{ move.new_quantity }}</td>
+                        <td>{{ move.reason|default:"-" }}</td>
+                        <td>{{ move.updated_by|default:"System" }}</td>
+                        <td>{{ move.created_at|date:"M d, Y H:i" }}</td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center text-muted">No items found.</td>
+                        <td colspan="6" class="text-center text-muted">No stock movements yet.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+
 </div>
 {% endblock %}

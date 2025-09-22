@@ -6,21 +6,48 @@
             <h2 class="fw-bold text-danger mb-4">
                 <i class="bi bi-person-circle"></i> {{ customer.name }}
             </h2>
+
             <p><i class="bi bi-envelope"></i> {{ customer.email }}</p>
             <p><i class="bi bi-telephone"></i> {{ customer.phone|default:"-" }}</p>
             <p><i class="bi bi-geo-alt"></i> {{ customer.address|default:"-" }}</p>
+            <p><i class="bi bi-bookmark-star"></i> Segment:
+                <span
+                    class="badge {% if customer.segment == 'VIP' %}bg-warning text-dark{% elif customer.segment == 'BLOCKED' %}bg-secondary{% else %}bg-info{% endif %}">
+                    {{ customer.segment }}
+                </span>
+            </p>
+            <p><i class="bi bi-shield-check"></i> Status:
+                {% if customer.is_active %}
+                <span class="badge bg-success">Active</span>
+                {% else %}
+                <span class="badge bg-secondary">Inactive</span>
+                {% endif %}
+            </p>
             <p><i class="bi bi-calendar"></i> Joined: {{ customer.created_at|date:"M d, Y" }}</p>
 
-            <div class="mt-4 d-flex justify-content-between">
-                <a href="{% url 'customers:edit' customer.id %}" class="btn btn-outline-warning">
+            {% if customer.notes %}
+            <div class="mt-3">
+                <h5 class="text-danger"><i class="bi bi-journal-text"></i> Notes</h5>
+                <p class="mb-0">{{ customer.notes|linebreaksbr }}</p>
+            </div>
+            {% endif %}
+
+            <div class="mt-4 d-flex gap-2">
+                <a href="{% url 'customers:customer_update' customer.id %}" class="btn btn-outline-warning">
                     <i class="bi bi-pencil"></i> Edit
                 </a>
-                <a href="{% url 'customers:delete' customer.id %}" class="btn btn-danger">
-                    <i class="bi bi-trash"></i> Delete
+                {% if customer.is_active %}
+                <a href="{% url 'customers:customer_delete' customer.id %}" class="btn btn-danger">
+                    <i class="bi bi-person-x"></i> Deactivate
                 </a>
-                <a href="{% url 'customers:list' %}" class="btn btn-outline-light">
-                    <i class="bi bi-arrow-left"></i> Back
-                </a>
+                {% else %}
+                <form method="post" action="{% url 'customers:customer_reactivate' customer.id %}">
+                    {% csrf_token %}
+                    <button class="btn btn-success"><i class="bi bi-arrow-counterclockwise"></i> Reactivate</button>
+                </form>
+                {% endif %}
+                <a href="{% url 'customers:customer_list' %}" class="btn btn-outline-light"><i
+                        class="bi bi-arrow-left"></i> Back</a>
             </div>
         </div>
     </div>

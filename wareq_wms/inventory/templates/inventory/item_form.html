@@ -3,6 +3,7 @@
 <div class="container py-5 d-flex justify-content-center">
     <div class="card shadow-lg bg-dark text-light w-100" style="max-width: 600px;">
         <div class="card-body">
+
             <!-- Title -->
             <h2 class="text-danger fw-bold mb-4 text-center">
                 {% if form.instance.pk %}
@@ -13,7 +14,7 @@
             </h2>
 
             <!-- Form -->
-            <form method="post">
+            <form method="post" id="itemForm">
                 {% csrf_token %}
 
                 <!-- SKU -->
@@ -25,6 +26,7 @@
                         <span class="input-group-text bg-danger text-light"><i class="bi bi-upc"></i></span>
                         {{ form.sku }}
                     </div>
+                    <div id="skuFeedback" class="small mt-1"></div>
                     {% if form.sku.errors %}
                     <div class="text-danger small">{{ form.sku.errors|join:", " }}</div>
                     {% endif %}
@@ -67,6 +69,9 @@
                         <span class="input-group-text bg-danger text-light"><i class="bi bi-cash-stack"></i></span>
                         {{ form.price }}
                     </div>
+                    {% if form.price.errors %}
+                    <div class="text-danger small">{{ form.price.errors|join:", " }}</div>
+                    {% endif %}
                 </div>
 
                 <!-- Supplier -->
@@ -92,4 +97,35 @@
         </div>
     </div>
 </div>
+
+<!-- Live SKU Validation -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const skuInput = document.getElementById("id_sku");
+        const feedback = document.getElementById("skuFeedback");
+
+        if (skuInput) {
+            skuInput.addEventListener("input", () => {
+                const sku = skuInput.value;
+                if (sku.length > 2) {
+                    fetch(`/inventory/validate-sku/?sku=${sku}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.exists) {
+                                feedback.textContent = "This SKU already exists.";
+                                feedback.classList.add("text-danger");
+                                feedback.classList.remove("text-success");
+                            } else {
+                                feedback.textContent = "SKU available.";
+                                feedback.classList.add("text-success");
+                                feedback.classList.remove("text-danger");
+                            }
+                        });
+                } else {
+                    feedback.textContent = "";
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

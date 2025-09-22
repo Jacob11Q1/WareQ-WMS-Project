@@ -14,7 +14,7 @@
             </h2>
 
             <!-- Item Form -->
-            <form method="post">
+            <form method="post" id="itemForm">
                 {% csrf_token %}
 
                 <!-- Item Name -->
@@ -24,6 +24,9 @@
                         <span class="input-group-text bg-danger text-light"><i class="bi bi-tag"></i></span>
                         {{ form.name }}
                     </div>
+                    {% if form.name.errors %}
+                    <div class="text-danger small">{{ form.name.errors|join:", " }}</div>
+                    {% endif %}
                 </div>
 
                 <!-- SKU -->
@@ -33,15 +36,16 @@
                         <span class="input-group-text bg-danger text-light"><i class="bi bi-upc-scan"></i></span>
                         {{ form.sku }}
                     </div>
+                    <div id="skuFeedback" class="small mt-1"></div>
+                    {% if form.sku.errors %}
+                    <div class="text-danger small">{{ form.sku.errors|join:", " }}</div>
+                    {% endif %}
                 </div>
 
                 <!-- Description -->
                 <div class="mb-3">
                     {{ form.description.label_tag }}
-                    <div class="input-group">
-                        <span class="input-group-text bg-danger text-light"><i class="bi bi-card-text"></i></span>
-                        {{ form.description }}
-                    </div>
+                    {{ form.description }}
                 </div>
 
                 <!-- Quantity -->
@@ -73,7 +77,7 @@
 
                 <!-- Save Button -->
                 <div class="d-grid mt-4">
-                    <button type="submit" class="btn btn-danger">
+                    <button type="submit" id="saveBtn" class="btn btn-danger">
                         <i class="bi bi-save"></i> Save Item
                     </button>
                 </div>
@@ -88,4 +92,57 @@
         </div>
     </div>
 </div>
+
+<!-- ✅ SKU Validation Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const skuInput = document.getElementById("id_sku");
+        const skuFeedback = document.getElementById("skuFeedback");
+        const saveBtn = document.getElementById("saveBtn");
+
+        // Get current item ID safely from Django (empty string if new item)
+        const currentItemId = "{{ form.instance.pk|default:'' }}";
+
+        if (skuInput) {
+            skuInput.addEventListener("input", () => {
+                const sku = skuInput.value.trim();
+
+                if (sku.length < 2) {
+                    skuFeedback.textContent = "";
+                    skuInput.classList.remove("is-valid", "is-invalid");
+                    saveBtn.disabled = false;
+                    return;
+                }
+
+                const params = new URLSearchParams({ sku: sku });
+                if (currentItemId) {
+                    params.set("exclude", currentItemId);
+                }
+
+                fetch(`/suppliers/validate-sku/?${params.toString()}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.exists) {
+                            skuFeedback.textContent = "SKU already exists.";
+                            skuFeedback.className = "text-danger small";
+                            skuInput.classList.add("is-invalid");
+                            skuInput.classList.remove("is-valid");
+                            saveBtn.disabled = true;
+                        } else {
+                            skuFeedback.textContent = "SKU available.";
+                            skuFeedback.className = "text-success small";
+                            skuInput.classList.add("is-valid");
+                            skuInput.classList.remove("is-invalid");
+                            saveBtn.disabled = false;
+                        }
+                    })
+                    .catch(() => {
+                        skuFeedback.textContent = "Error validating SKU.";
+                        skuFeedback.className = "text-warning small";
+                        saveBtn.disabled = false;
+                    });
+            });
+        }
+    });
+</script>
 {% endblock %}

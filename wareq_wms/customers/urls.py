@@ -10,4 +10,11 @@ urlpatterns = [
     path("<int:pk>/", views.customer_detail, name="customer_detail"),
     path("<int:pk>/edit/", views.customer_update, name="customer_update"),
     path("<int:pk>/delete/", views.customer_delete, name="customer_delete"),
+    path("<int:pk>/reactivate/", views.customer_reactivate, name="customer_reactivate"),
+
+    # JSON / AJAX
+    path("api/list/", views.api_list, name="api_list"),
+    path("api/search/", views.api_search, name="api_search"),
+    path("api/stats/", views.api_stats, name="api_stats"),
+    path("validate-email/", views.validate_email, name="validate_email"),
 ]

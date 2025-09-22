@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-lg bg-dark text-light w-100" style="max-width: 600px;">
+        <div class="card-body text-center">
+
+            <!-- Title -->
+            <h2 class="fw-bold text-danger mb-4">
+                <i class="bi bi-exclamation-triangle"></i> Confirm Delete
+            </h2>
+
+            {% if item.quantity > 0 %}
+            <!-- Warning: Cannot delete item with stock -->
+            <div class="alert alert-warning">
+                <strong>{{ item.name }}</strong> (SKU: {{ item.sku }}) still has
+                <strong>{{ item.quantity }}</strong> in stock.
+                <br>For data integrity, this item cannot be deleted until stock is cleared.
+            </div>
+            <a href="{% url 'inventory:item_detail' item.id %}" class="btn btn-outline-light">
+                <i class="bi bi-arrow-left"></i> Back to Item
+            </a>
+            {% else %}
+            <!-- Confirm delete -->
+            <p class="mb-3">
+                Are you sure you want to delete <strong>{{ item.name }}</strong> (SKU: {{ item.sku }})?
+            </p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger me-2">
+                    <i class="bi bi-trash"></i> Yes, Delete
+                </button>
+                <a href="{% url 'inventory:item_list' %}" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left"></i> Cancel
+                </a>
+            </form>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

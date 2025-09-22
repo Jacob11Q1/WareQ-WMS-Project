@@ -94,7 +94,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'wareq_wms',
-        'USER': 'root',        # your MySQL username
+        'USER': 'root',        # My MySQL username
         'PASSWORD': '190275@11Jqq',
         'HOST': 'localhost',
         'PORT': '3306',

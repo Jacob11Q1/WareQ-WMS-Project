@@ -7,15 +7,12 @@
 
             <!-- Title -->
             <h2 class="fw-bold text-danger mb-4 text-center">
-                {% if form.instance.pk %}
-                <i class="bi bi-pencil-square"></i> Edit Supplier
-                {% else %}
-                <i class="bi bi-person-plus"></i> Add Supplier
-                {% endif %}
+                {% if form.instance.pk %}<i class="bi bi-pencil-square"></i> Edit Supplier{% else %}<i
+                    class="bi bi-person-plus"></i> Add Supplier{% endif %}
             </h2>
 
             <!-- Form -->
-            <form method="post" novalidate>
+            <form method="post" novalidate id="supplierForm" data-supplier-id="{{ form.instance.pk|default:'' }}">
                 {% csrf_token %}
 
                 <!-- Name -->
@@ -25,10 +22,7 @@
                         <span class="input-group-text bg-danger text-light"><i class="bi bi-building"></i></span>
                         {{ form.name|add_class:"form-control bg-dark text-light border-secondary" }}
                     </div>
-                    {% if form.name.errors %}
-                    <div class="text-danger small mt-1">
-                        {{ form.name.errors|join:", " }}
-                    </div>
+                    {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors|join:", " }}</div>
                     {% endif %}
                 </div>
 
@@ -39,11 +33,9 @@
                         <span class="input-group-text bg-danger text-light"><i class="bi bi-envelope"></i></span>
                         {{ form.email|add_class:"form-control bg-dark text-light border-secondary" }}
                     </div>
-                    {% if form.email.errors %}
-                    <div class="text-danger small mt-1">
-                        {{ form.email.errors|join:", " }}
-                    </div>
-                    {% endif %}
+                    <div id="emailFeedback" class="small mt-1"></div>
+                    {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors|join:", " }}
+                    </div>{% endif %}
                 </div>
 
                 <!-- Phone -->
@@ -53,11 +45,8 @@
                         <span class="input-group-text bg-danger text-light"><i class="bi bi-telephone"></i></span>
                         {{ form.phone|add_class:"form-control bg-dark text-light border-secondary" }}
                     </div>
-                    {% if form.phone.errors %}
-                    <div class="text-danger small mt-1">
-                        {{ form.phone.errors|join:", " }}
-                    </div>
-                    {% endif %}
+                    {% if form.phone.errors %}<div class="text-danger small mt-1">{{ form.phone.errors|join:", " }}
+                    </div>{% endif %}
                 </div>
 
                 <!-- Address -->
@@ -67,12 +56,16 @@
                         <span class="input-group-text bg-danger text-light"><i class="bi bi-geo-alt"></i></span>
                         {{ form.address|add_class:"form-control bg-dark text-light border-secondary" }}
                     </div>
-                    {% if form.address.errors %}
-                    <div class="text-danger small mt-1">
-                        {{ form.address.errors|join:", " }}
-                    </div>
-                    {% endif %}
+                    {% if form.address.errors %}<div class="text-danger small mt-1">{{ form.address.errors|join:", " }}
+                    </div>{% endif %}
                 </div>
+
+                {% if form.fields.is_active %}
+                <div class="form-check mb-3">
+                    {{ form.is_active }}
+                    <label class="form-check-label">Active</label>
+                </div>
+                {% endif %}
 
                 <!-- Save Button -->
                 <div class="d-grid mt-4">
@@ -91,4 +84,37 @@
         </div>
     </div>
 </div>
+
+<script>
+    const emailInput = document.getElementById('id_email');
+    const emailFeedback = document.getElementById('emailFeedback');
+    const formEl = document.getElementById('supplierForm');
+    const supplierId = formEl.dataset.supplierId;  // '' on create
+
+    if (emailInput) {
+        emailInput.addEventListener('input', () => {
+            const email = emailInput.value.trim();
+            if (email.length < 4 || !email.includes('@')) {
+                emailFeedback.textContent = '';
+                emailInput.classList.remove('is-valid', 'is-invalid');
+                return;
+            }
+            const params = new URLSearchParams({ email });
+            if (supplierId) params.set('exclude', supplierId);
+            fetch(`/suppliers/validate-email/?${params.toString()}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.exists) {
+                        emailFeedback.textContent = "Email already exists.";
+                        emailFeedback.classList.add('text-danger'); emailFeedback.classList.remove('text-success');
+                        emailInput.classList.add('is-invalid'); emailInput.classList.remove('is-valid');
+                    } else {
+                        emailFeedback.textContent = "Email available.";
+                        emailFeedback.classList.add('text-success'); emailFeedback.classList.remove('text-danger');
+                        emailInput.classList.add('is-valid'); emailInput.classList.remove('is-invalid');
+                    }
+                });
+        });
+    }
+</script>
 {% endblock %}

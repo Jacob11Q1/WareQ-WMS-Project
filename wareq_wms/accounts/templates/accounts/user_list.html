@@ -21,11 +21,12 @@
                         <td>{{ forloop.counter }}</td>
                         <td>{{ u.username }}</td>
                         <td>{{ u.email }}</td>
-                        <td><span class="badge bg-info">{{ u.role }}</span></td>
+                        <td><span class="badge {{ u.role|role_badge }}">{{ u.role|title }}</span></td>
                         <td>{{ u.date_joined|date:"M d, Y" }}</td>
                         <td>
-                            <a href="{% url 'accounts:user_delete' u.id %}" class="btn btn-sm btn-danger"><i
-                                    class="bi bi-trash"></i></a>
+                            <a href="{% url 'accounts:user_delete' u.id %}" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i>
+                            </a>
                         </td>
                     </tr>
                     {% empty %}

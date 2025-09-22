@@ -4,11 +4,35 @@
     <div class="card shadow-lg stat-card">
         <div class="card-body">
             <h2 class="fw-bold text-danger mb-3">Order #{{ order.id }}</h2>
-            <p><strong>Type:</strong> {{ order.get_order_type_display }}</p>
-            <p><strong>Status:</strong> {{ order.status }}</p>
+            <p><strong>Type:</strong>
+                {% if order.order_type == "SALE" %}
+                <span class="badge bg-success">Sale</span>
+                {% else %}
+                <span class="badge bg-info">Purchase</span>
+                {% endif %}
+            </p>
+
+            <p><strong>Status:</strong>
+                <!-- AJAX Status Update -->
+                <select id="statusDropdown" class="form-select d-inline w-auto" data-order-id="{{ order.id }}">
+                    <option value="PENDING" {% if order.status=="PENDING" %}selected{% endif %}>Pending</option>
+                    <option value="PROCESSING" {% if order.status=="PROCESSING" %}selected{% endif %}>Processing
+                    </option>
+                    <option value="COMPLETED" {% if order.status=="COMPLETED" %}selected{% endif %}>Completed</option>
+                    <option value="CANCELLED" {% if order.status=="CANCELLED" %}selected{% endif %}>Cancelled</option>
+                </select>
+            </p>
+
             <p><strong>Customer:</strong> {{ order.customer|default:"-" }}</p>
             <p><strong>Supplier:</strong> {{ order.supplier|default:"-" }}</p>
             <p><strong>Date:</strong> {{ order.created_at|date:"M d, Y H:i" }}</p>
+            <p><strong>Last Updated:</strong> {{ order.updated_at|date:"M d, Y H:i" }}</p>
+
+            {% if order.status == "COMPLETED" %}
+            <div class="alert alert-info mt-3">
+                Stock updated successfully for this order.
+            </div>
+            {% endif %}
 
             <h4 class="mt-4">Items</h4>
             <table class="table table-dark table-hover">
@@ -49,4 +73,31 @@
         </div>
     </div>
 </div>
+
+<!-- AJAX Status Update Script -->
+<script>
+    document.getElementById("statusDropdown").addEventListener("change", function () {
+        const orderId = this.dataset.orderId;
+        const newStatus = this.value;
+
+        fetch(`/orders/${orderId}/update-status/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `status=${newStatus}`
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Order #${orderId} updated to ${data.status}`);
+                    location.reload(); // refresh to show stock note
+                } else {
+                    alert(`Error: ${data.error}`);
+                }
+            })
+            .catch(err => alert("Failed to update status."));
+    });
+</script>
 {% endblock %}
