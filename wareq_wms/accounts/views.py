@@ -13,7 +13,7 @@ def register_view(request):
             user = form.save()
             login(request, user)
             messages.success(request, "Account created successfully!")
-            return redirect("core:index")
+            return redirect("core:home")
         else:
             messages.error(request, "Please fix the errors below.")
     else:
@@ -31,7 +31,7 @@ def login_view(request):
             # Role-based redirect
             if user.is_admin():
                 return redirect("accounts:user_list")
-            return redirect("core:index")
+            return redirect("core:home")
         else:
             messages.error(request, "Invalid username or password")
     else:

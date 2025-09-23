@@ -74,8 +74,24 @@
     </div>
 </div>
 
-<!-- AJAX Status Update Script -->
+<!-- AJAX Status Update Script (CSRF via cookie) -->
 <script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie("csrftoken");
+
     document.getElementById("statusDropdown").addEventListener("change", function () {
         const orderId = this.dataset.orderId;
         const newStatus = this.value;
@@ -83,21 +99,21 @@
         fetch(`/orders/${orderId}/update-status/`, {
             method: "POST",
             headers: {
-                "X-CSRFToken": "{{ csrf_token }}",
+                "X-CSRFToken": csrftoken,
                 "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: `status=${newStatus}`
+            body: `status=${encodeURIComponent(newStatus)}`
         })
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
                     alert(`Order #${orderId} updated to ${data.status}`);
-                    location.reload(); // refresh to show stock note
+                    location.reload(); // refresh to show any status-related notes
                 } else {
                     alert(`Error: ${data.error}`);
                 }
             })
-            .catch(err => alert("Failed to update status."));
+            .catch(() => alert("Failed to update status."));
     });
 </script>
 {% endblock %}

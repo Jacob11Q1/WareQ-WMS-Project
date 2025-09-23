@@ -8,28 +8,36 @@
     <!-- Stats -->
     <div class="row g-4 mb-4 text-center">
         <div class="col-md-3">
-            <div class="card stat-card p-4 shadow-sm">
-                <h2 class="fw-bold text-danger">{{ orders_count }}</h2>
-                <p class="mb-0">Orders</p>
-            </div>
+            <a href="{% url 'orders:order_list' %}" class="text-decoration-none">
+                <div class="card stat-card p-4 shadow-sm">
+                    <h2 class="fw-bold text-danger">{{ orders_count }}</h2>
+                    <p class="mb-0">Orders</p>
+                </div>
+            </a>
         </div>
         <div class="col-md-3">
-            <div class="card stat-card p-4 shadow-sm">
-                <h2 class="fw-bold text-danger">{{ customers_count }}</h2>
-                <p class="mb-0">Customers</p>
-            </div>
+            <a href="{% url 'customers:customer_list' %}" class="text-decoration-none">
+                <div class="card stat-card p-4 shadow-sm">
+                    <h2 class="fw-bold text-danger">{{ customers_count }}</h2>
+                    <p class="mb-0">Customers</p>
+                </div>
+            </a>
         </div>
         <div class="col-md-3">
-            <div class="card stat-card p-4 shadow-sm">
-                <h2 class="fw-bold text-danger">{{ suppliers_count }}</h2>
-                <p class="mb-0">Suppliers</p>
-            </div>
+            <a href="{% url 'suppliers:supplier_list' %}" class="text-decoration-none">
+                <div class="card stat-card p-4 shadow-sm">
+                    <h2 class="fw-bold text-danger">{{ suppliers_count }}</h2>
+                    <p class="mb-0">Suppliers</p>
+                </div>
+            </a>
         </div>
         <div class="col-md-3">
-            <div class="card stat-card p-4 shadow-sm">
-                <h2 class="fw-bold text-danger">{{ items_count }}</h2>
-                <p class="mb-0">Items</p>
-            </div>
+            <a href="{% url 'inventory:item_list' %}" class="text-decoration-none">
+                <div class="card stat-card p-4 shadow-sm">
+                    <h2 class="fw-bold text-danger">{{ items_count }}</h2>
+                    <p class="mb-0">Items</p>
+                </div>
+            </a>
         </div>
     </div>
 
@@ -41,13 +49,24 @@
                     <h5 class="fw-bold text-danger mb-3">Recent Orders</h5>
                     <ul class="list-group list-group-flush">
                         {% for order in recent_orders %}
-                        <li class="list-group-item bg-dark text-light">
-                            <i class="bi bi-cart-check"></i> #{{ order.id }} – {{ order.status }}
+                        <li
+                            class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-cart-check"></i> #{{ order.id }}</span>
+                            <span class="badge 
+                                {% if order.status == 'COMPLETED' %}bg-success
+                                {% elif order.status == 'PENDING' %}bg-warning text-dark
+                                {% elif order.status == 'CANCELLED' %}bg-danger
+                                {% else %}bg-secondary{% endif %}">
+                                {{ order.status }}
+                            </span>
                         </li>
                         {% empty %}
                         <li class="list-group-item bg-dark text-muted">No recent orders</li>
                         {% endfor %}
                     </ul>
+                    <div class="mt-3 text-end">
+                        <a href="{% url 'orders:order_list' %}" class="btn btn-outline-danger btn-sm">View All</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -64,6 +83,9 @@
                         <li class="list-group-item bg-dark text-muted">No recent customers</li>
                         {% endfor %}
                     </ul>
+                    <div class="mt-3 text-end">
+                        <a href="{% url 'customers:customer_list' %}" class="btn btn-outline-danger btn-sm">View All</a>
+                    </div>
                 </div>
             </div>
         </div>

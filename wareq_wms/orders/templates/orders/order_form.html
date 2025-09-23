@@ -2,8 +2,8 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <div class="container py-5 d-flex justify-content-center">
-    <div class="card shadow-lg stat-card w-100" style="max-width: 900px;">
-        <div class="card-body">
+    <div class="card shadow-lg bg-dark text-light w-100" style="max-width: 950px; border-radius: 1rem;">
+        <div class="card-body p-5">
             <h2 class="fw-bold mb-4 text-center text-light">
                 {% if form.instance.pk %}
                 <i class="bi bi-pencil-square text-danger"></i> Edit Order
@@ -12,58 +12,80 @@
                 {% endif %}
             </h2>
 
-            <form method="post" id="orderForm">
+            <form method="post" id="orderForm" novalidate>
                 {% csrf_token %}
-                <div class="row">
-                    <div class="col-md-6 mb-3">{{ form.order_type }}</div>
+
+                <!-- Order Info -->
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Order Type</label>
+                        {{ form.order_type }}
+                    </div>
                     {% if form.instance.pk %}
-                    <div class="col-md-6 mb-3">{{ form.status }}</div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Status</label>
+                        {{ form.status }}
+                    </div>
                     {% endif %}
                 </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">{{ form.customer }}</div>
-                    <div class="col-md-6 mb-3">{{ form.supplier }}</div>
+
+                <div class="row g-4 mt-2">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Customer</label>
+                        {{ form.customer }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Supplier</label>
+                        {{ form.supplier }}
+                    </div>
                 </div>
 
-                <h4 class="text-danger mt-4">Order Items</h4>
+                <!-- Order Items -->
+                <h4 class="text-danger mt-5 mb-3"><i class="bi bi-box-seam"></i> Order Items</h4>
                 {{ formset.management_form }}
-                <table class="table table-dark" id="orderItemsTable">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Qty</th>
-                            <th>Price</th>
-                            <th>Total</th>
-                            <th>Delete?</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for form in formset %}
-                        <tr>
-                            <td>
-                                <!-- AJAX item search -->
-                                <input type="text" class="form-control item-search" placeholder="Search item..."
-                                    data-input-id="{{ form.item.id_for_label }}">
-                                {{ form.item }}
-                            </td>
-                            <td>{{ form.quantity }}</td>
-                            <td class="price-field">{{ form.price }}</td>
-                            <td class="row-total">$0.00</td>
-                            <td>{{ form.DELETE }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="3" class="text-end">Grand Total</th>
-                            <th id="grandTotal">$0.00</th>
-                            <th></th>
-                        </tr>
-                    </tfoot>
-                </table>
 
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-danger"><i class="bi bi-check-circle"></i> Save Order</button>
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle text-light mb-0" id="orderItemsTable"
+                        style="border-color: #444;">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 35%;">Item</th>
+                                <th style="width: 15%;">Qty</th>
+                                <th style="width: 20%;">Price</th>
+                                <th style="width: 20%;">Total</th>
+                                <th style="width: 10%;">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for form in formset %}
+                            <tr style="position: relative;">
+                                <td>
+                                    <input type="text" class="form-control item-search mb-2"
+                                        placeholder="Search item..." data-input-id="{{ form.item.id_for_label }}">
+                                    {{ form.item }}
+                                </td>
+                                <td>{{ form.quantity }}</td>
+                                <td class="price-field">{{ form.price }}</td>
+                                <td class="row-total fw-semibold">$0.00</td>
+                                <td>{{ form.DELETE }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-dark">
+                            <tr>
+                                <th colspan="3" class="text-end text-uppercase">Grand Total</th>
+                                <th id="grandTotal" class="fw-bold text-success">$0.00</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Submit -->
+                <div class="d-grid mt-5">
+                    <button type="submit" class="btn btn-danger btn-lg rounded-pill">
+                        <i class="bi bi-check-circle"></i> Save Order
+                    </button>
                 </div>
             </form>
         </div>
@@ -72,18 +94,23 @@
 
 <!-- AJAX Item Search + Live Totals -->
 <script>
+    // search items
     document.querySelectorAll(".item-search").forEach(input => {
         input.addEventListener("keyup", function () {
-            const q = this.value;
+            const q = this.value.trim();
             const hiddenInputId = this.dataset.inputId;
             if (q.length < 2) return;
 
-            fetch(`/orders/search-items/?q=${q}`)
+            fetch(`/orders/search-items/?q=${encodeURIComponent(q)}`)
                 .then(res => res.json())
                 .then(items => {
+                    // clear old dropdown
+                    const old = this.parentNode.querySelector(".live-dropdown");
+                    if (old) old.remove();
+
                     if (items.length > 0) {
                         let dropdown = document.createElement("ul");
-                        dropdown.className = "list-group position-absolute";
+                        dropdown.className = "list-group position-absolute live-dropdown";
                         dropdown.style.zIndex = "1000";
                         dropdown.style.width = this.offsetWidth + "px";
 
@@ -111,8 +138,12 @@
     function updateTotals() {
         let grandTotal = 0;
         document.querySelectorAll("#orderItemsTable tbody tr").forEach(row => {
-            const qty = parseFloat(row.querySelector("input[name$='quantity']").value) || 0;
-            const price = parseFloat(row.querySelector("input[name$='price']").value) || 0;
+            const qtyInput = row.querySelector("input[name$='quantity']");
+            const priceInput = row.querySelector("input[name$='price']");
+            if (!qtyInput || !priceInput) return;
+
+            const qty = parseFloat(qtyInput.value) || 0;
+            const price = parseFloat(priceInput.value) || 0;
             const total = qty * price;
             row.querySelector(".row-total").textContent = `$${total.toFixed(2)}`;
             grandTotal += total;
@@ -120,7 +151,6 @@
         document.getElementById("grandTotal").textContent = `$${grandTotal.toFixed(2)}`;
     }
 
-    // Trigger live total updates
     document.querySelectorAll("input[name$='quantity'], input[name$='price']").forEach(input => {
         input.addEventListener("input", updateTotals);
     });

@@ -34,7 +34,7 @@ class Order(models.Model):
         return f"Order #{self.id} - {self.order_type} ({self.status})"
 
     # -------------------------------
-    # PHASE 4 ADDITIONS
+    # PHASE 4 ADDITIONS (kept)
     # -------------------------------
 
     def can_be_deleted(self):
@@ -98,7 +98,7 @@ class OrderItem(models.Model):
             raise ValidationError("Quantity must be greater than zero.")
 
     def save(self, *args, **kwargs):
-        if not self.price:  # auto-fill from inventory
+        if self.price in [None, ""]:  # auto-fill from inventory only if price not provided
             self.price = self.item.price
         self.clean()
         super().save(*args, **kwargs)

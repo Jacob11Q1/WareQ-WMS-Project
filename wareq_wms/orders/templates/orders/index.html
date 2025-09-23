@@ -46,16 +46,6 @@
         </div>
     </div>
 
-    <!-- Low Stock Alert -->
-    {% if low_stock_items %}
-    <div class="alert alert-danger">
-        Low Stock Alert:
-        {% for item in low_stock_items %}
-        {{ item.name }} ({{ item.quantity }} left){% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </div>
-    {% endif %}
-
     <!-- Recent Orders Table -->
     <div class="card shadow-lg">
         <div class="card-body table-responsive">

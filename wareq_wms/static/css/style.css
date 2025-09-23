@@ -1,4 +1,6 @@
-/* Variables */
+/* =========================
+   Global Variables & Theme
+========================= */
 :root {
     --bg-color: #121212;
     --text-color: #ffffff;
@@ -14,7 +16,9 @@
     --secondary: #ddd;
 }
 
-/* General */
+/* =========================
+   General
+========================= */
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -39,7 +43,9 @@ h5 {
     margin-bottom: 1rem;
 }
 
-/* Navbar */
+/* =========================
+   Navbar
+========================= */
 .navbar {
     background-color: var(--bg-color) !important;
     border-bottom: 1px solid var(--secondary);
@@ -67,7 +73,7 @@ h5 {
     border-radius: 2px;
 }
 
-/* Nav links */
+/* Nav Links */
 .nav-link {
     color: var(--text-color) !important;
     transition: color 0.2s ease;
@@ -95,7 +101,9 @@ h5 {
     border-radius: 2px;
 }
 
-/* Footer */
+/* =========================
+   Footer
+========================= */
 footer {
     background-color: var(--bg-color) !important;
     border-top: 1px solid var(--secondary);
@@ -111,7 +119,9 @@ footer a:hover {
     transform: translateY(-2px);
 }
 
-/* Cards */
+/* =========================
+   Cards
+========================= */
 .card {
     background: var(--card-bg);
     border-radius: 16px;
@@ -128,7 +138,7 @@ footer a:hover {
     box-shadow: 0 12px 25px rgba(220, 53, 69, 0.5);
 }
 
-/* Dashboard Stat Cards Shine Effect */
+/* Stat Cards */
 .stat-card {
     border: 1px solid rgba(220, 53, 69, 0.4);
     border-radius: 16px;
@@ -171,7 +181,9 @@ footer a:hover {
     }
 }
 
-/* Features */
+/* =========================
+   Features
+========================= */
 .feature-card .icon {
     font-size: 2.5rem;
     margin-bottom: 12px;
@@ -198,13 +210,14 @@ footer a:hover {
     transform: scale(1.03);
 }
 
-/* Hero Logo */
+/* =========================
+   Hero
+========================= */
 .hero-logo {
     max-width: 160px;
     margin-bottom: 20px;
 }
 
-/* Typing Effect */
 .typing-text {
     overflow: hidden;
     white-space: nowrap;
@@ -229,7 +242,9 @@ footer a:hover {
     }
 }
 
-/* Auth Pages */
+/* =========================
+   Auth Pages
+========================= */
 .auth-wrapper {
     min-height: 100vh;
     padding-top: 80px;
@@ -260,7 +275,9 @@ footer a:hover {
     opacity: 0.9;
 }
 
-/* Inputs (auth + forms globally) */
+/* =========================
+   Forms & Inputs
+========================= */
 form input,
 form textarea,
 form select {
@@ -288,7 +305,9 @@ form select:focus {
     outline: none;
 }
 
-/* Buttons */
+/* =========================
+   Buttons
+========================= */
 .btn-danger {
     border-radius: 8px;
     transition: all 0.3s ease;
@@ -311,7 +330,9 @@ form select:focus {
     box-shadow: 0 0 12px rgba(220, 53, 69, 0.7);
 }
 
-/* Table Improvements */
+/* =========================
+   Tables
+========================= */
 .table-dark th,
 .table-dark td {
     vertical-align: middle;
@@ -321,7 +342,9 @@ form select:focus {
     background-color: rgba(220, 53, 69, 0.1) !important;
 }
 
-/* Dashboard Lists */
+/* =========================
+   Dashboard Lists
+========================= */
 .list-group-item {
     background: var(--card-bg) !important;
     border: none;
@@ -333,7 +356,9 @@ form select:focus {
     cursor: pointer;
 }
 
-/* Responsive Tweaks */
+/* =========================
+   Responsive
+========================= */
 @media (max-width: 992px) {
     .navbar-nav {
         text-align: center;

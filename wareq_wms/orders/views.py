@@ -29,12 +29,12 @@ def order_list(request):
     orders = Order.objects.select_related("customer", "supplier").prefetch_related("items").order_by("-created_at")
 
     # Filter by status
-    status = request.GET.get("status")
+    status = request.GET.get("status", "")
     if status:
         orders = orders.filter(status=status)
 
     # Search by customer/supplier
-    q = request.GET.get("q")
+    q = request.GET.get("q", "")
     if q:
         orders = orders.filter(
             Q(customer__name__icontains=q) |
@@ -46,7 +46,11 @@ def order_list(request):
     page = request.GET.get("page")
     orders = paginator.get_page(page)
 
-    return render(request, "orders/order_list.html", {"orders": orders})
+    return render(request, "orders/order_list.html", {
+        "orders": orders,
+        "status": status,
+        "q": q,
+    })
 
 
 def order_detail(request, pk):
