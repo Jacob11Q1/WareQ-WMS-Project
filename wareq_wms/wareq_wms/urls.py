@@ -16,14 +16,32 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.permissions import AllowAny
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+    SpectacularRedocView,
+)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('customers/', include('customers.urls')),
-    path('suppliers/', include('suppliers.urls')),
-    path('inventory/', include('inventory.urls')),
-    path('orders/', include('orders.urls')),
-    path('accounts/', include('accounts.urls')),
+    path("admin/", admin.site.urls),
+
+    # Apps
+    path("customers/", include("customers.urls")),
+    path("suppliers/", include("suppliers.urls")),
+    path("inventory/", include("inventory.urls")),
+    path("orders/", include("orders.urls")),
+    path("accounts/", include("accounts.urls")),
     path("dashboard/", include("dashboard.urls")),
-    path('', include('core.urls')),  # homepage
+    path("", include("core.urls")),   # homepage
+
+    # API v1
+    path("api/v1/", include("api.urls")),
+
+    # OpenAPI schema
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+
+    # Swagger & ReDoc UI
+    path("swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+    path("redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
 ]
