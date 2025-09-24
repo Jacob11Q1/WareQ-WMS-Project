@@ -1,18 +1,24 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.views.decorators.http import require_POST
-from django.db.models import Q
+from django.db.models import Q, Count
+from django.utils.timezone import now, timedelta
+from django.template.loader import render_to_string
+
+from xhtml2pdf import pisa   # ✅ replace weasyprint
+from io import BytesIO
 
 from .models import Order, OrderItem
 from .forms import OrderForm, OrderItemFormSet
 from inventory.models import Item
-from django.db.models import Count
-from django.utils.timezone import now, timedelta
 
 
+# -------------------------
+# Dashboard
+# -------------------------
 def index(request):
     """Orders dashboard with stats + recent orders."""
     orders = Order.objects.order_by("-created_at")
@@ -26,16 +32,24 @@ def index(request):
     return render(request, "orders/index.html", context)
 
 
+# -------------------------
+# CRUD Views
+# -------------------------
 def order_list(request):
     """List all orders with filters, search, and pagination."""
-    orders = Order.objects.select_related("customer", "supplier").prefetch_related("items").order_by("-created_at")
+    orders = (
+        Order.objects
+        .select_related("customer", "supplier")
+        .prefetch_related("items")
+        .order_by("-created_at")
+    )
 
     # Filter by status
     status = request.GET.get("status", "")
     if status:
         orders = orders.filter(status=status)
 
-    # Search by customer/supplier
+    # Search by customer or supplier
     q = request.GET.get("q", "")
     if q:
         orders = orders.filter(
@@ -43,8 +57,7 @@ def order_list(request):
             Q(supplier__name__icontains=q)
         )
 
-    # Pagination
-    paginator = Paginator(orders, 10)  # 10 orders per page
+    paginator = Paginator(orders, 10)
     page = request.GET.get("page")
     orders = paginator.get_page(page)
 
@@ -69,7 +82,7 @@ def order_create(request):
         formset = OrderItemFormSet(request.POST)
         if form.is_valid() and formset.is_valid():
             order = form.save(commit=False)
-            order.status = "PENDING"  # always start pending
+            order.status = "PENDING"
             order.save()
             formset.instance = order
             formset.save()
@@ -123,11 +136,13 @@ def order_delete(request, pk):
 
     return render(request, "orders/order_confirm_delete.html", {"order": order})
 
+
+# -------------------------
+# Reports & Invoice
+# -------------------------
 def order_report(request):
     """Comprehensive report page for orders with charts and insights."""
     orders = Order.objects.all()
-
-    # Stats
     stats = {
         "total_orders": orders.count(),
         "sales_count": orders.filter(order_type="SALE").count(),
@@ -137,7 +152,6 @@ def order_report(request):
         "cancelled_count": orders.filter(status="CANCELLED").count(),
     }
 
-    # Orders by month (last 6 months)
     last_6_months = now().date().replace(day=1) - timedelta(days=150)
     monthly_orders = (
         orders.filter(created_at__gte=last_6_months)
@@ -147,7 +161,6 @@ def order_report(request):
         .order_by("month")
     )
 
-    # Orders by status (for pie chart)
     status_data = (
         orders.values("status")
         .annotate(count=Count("id"))
@@ -163,10 +176,26 @@ def order_report(request):
     return render(request, "orders/order_report.html", context)
 
 
+def order_invoice(request, pk):
+    """Generate invoice (HTML preview or downloadable PDF)."""
+    order = get_object_or_404(Order.objects.prefetch_related("items__item"), pk=pk)
+    html = render_to_string("orders/order_invoice.html", {"order": order})
+
+    if request.GET.get("format") == "pdf":
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = f'filename="invoice_{order.id}.pdf"'
+
+        pisa_status = pisa.CreatePDF(html, dest=response)
+        if pisa_status.err:
+            return HttpResponse("Error generating PDF", status=500)
+        return response
+
+    return HttpResponse(html)
+
+
 # -------------------------
 # AJAX Endpoints
 # -------------------------
-
 @require_POST
 def update_status(request, pk):
     """AJAX: update order status without page reload."""
@@ -184,6 +213,9 @@ def update_status(request, pk):
 def search_items(request):
     """AJAX: search items for autocomplete in order form."""
     q = request.GET.get("q", "")
-    items = Item.objects.filter(name__icontains=q)[:10]  # limit results
-    results = [{"id": item.id, "name": item.name, "price": str(item.price)} for item in items]
+    items = Item.objects.filter(name__icontains=q)[:10]
+    results = [
+        {"id": item.id, "name": item.name, "price": str(item.price)}
+        for item in items
+    ]
     return JsonResponse(results, safe=False)

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-body p-5">
+            <!-- Header -->
+            <div class="d-flex justify-content-between mb-4">
+                <h2 class="fw-bold text-primary">Invoice {{ order.invoice_number }}</h2>
+                <span class="badge bg-success fs-6">{{ order.status }}</span>
+            </div>
+
+            <!-- Meta Info -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h6 class="fw-bold">From:</h6>
+                    <p>{{ company.name }}<br>
+                        {{ company.email }}<br>
+                        {{ company.phone }}<br>
+                        {{ company.address }}</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <h6 class="fw-bold">To:</h6>
+                    {% if order.customer %}
+                    <p>{{ order.customer.name }}<br>
+                        {{ order.customer.email }}<br>
+                        {{ order.customer.phone }}</p>
+                    {% elif order.supplier %}
+                    <p>{{ order.supplier.name }}<br>
+                        {{ order.supplier.email }}<br>
+                        {{ order.supplier.phone }}</p>
+                    {% else %}
+                    <p>-</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Items -->
+            <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Item</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-end">Price</th>
+                        <th class="text-end">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for oi in order.items.all %}
+                    <tr>
+                        <td>{{ oi.item.name }}</td>
+                        <td class="text-center">{{ oi.quantity }}</td>
+                        <td class="text-end">${{ oi.price }}</td>
+                        <td class="text-end">${{ oi.total_price }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Totals -->
+            <div class="d-flex justify-content-end mt-4">
+                <div>
+                    <h5 class="fw-bold">Grand Total:</h5>
+                    <h4 class="text-primary">${{ order.total_amount }}</h4>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-5 text-center text-muted small">
+                <p>Thank you for your business.</p>
+                <a href="?format=pdf" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-download"></i> Download PDF
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

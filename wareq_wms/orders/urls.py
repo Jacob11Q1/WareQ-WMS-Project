@@ -20,4 +20,7 @@ urlpatterns = [
     # AJAX endpoints
     path("<int:pk>/update-status/", views.update_status, name="update_status"),
     path("search-items/", views.search_items, name="search_items"),
+
+    # New invoice route
+    path("<int:pk>/invoice/", views.order_invoice, name="order_invoice"),
 ]

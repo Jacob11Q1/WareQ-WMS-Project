@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "widget_tweaks",
-    'django_seed',
 
     # API & Docs
     "rest_framework",

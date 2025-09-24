@@ -1,5 +1,11 @@
 from django.db import models
 
+phone = models.CharField(
+    max_length=30,   # or 50 if you want to be extra safe
+    blank=True,
+    null=True,
+    db_index=True
+)
 
 class Customer(models.Model):
     """
