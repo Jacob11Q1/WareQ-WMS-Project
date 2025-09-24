@@ -1,57 +1,84 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container py-5">
-    <h2 class="fw-bold text-light mb-4">
-        <i class="bi bi-speedometer2 text-danger"></i> Dashboard
-    </h2>
+
+    <!-- Welcome -->
+    <h4 class="fw-bold text-light mb-4">
+        Welcome back, {{ user.username }}
+    </h4>
 
     <!-- Stats -->
     <div class="row g-4 mb-4 text-center">
         <div class="col-md-3">
             <a href="{% url 'orders:order_list' %}" class="text-decoration-none">
-                <div class="card stat-card p-4 shadow-sm">
-                    <h2 class="fw-bold text-danger">{{ orders_count }}</h2>
-                    <p class="mb-0">Orders</p>
+                <div class="card stat-card p-4 shadow-sm bg-dark text-white rounded-4">
+                    <i class="bi bi-cart-check display-6 text-danger mb-2"></i>
+                    <h2 class="fw-bold">{{ orders_count }}</h2>
+                    <p class="mb-0 text-muted">Orders</p>
                 </div>
             </a>
         </div>
         <div class="col-md-3">
             <a href="{% url 'customers:customer_list' %}" class="text-decoration-none">
-                <div class="card stat-card p-4 shadow-sm">
-                    <h2 class="fw-bold text-danger">{{ customers_count }}</h2>
-                    <p class="mb-0">Customers</p>
+                <div class="card stat-card p-4 shadow-sm bg-dark text-white rounded-4">
+                    <i class="bi bi-people display-6 text-danger mb-2"></i>
+                    <h2 class="fw-bold">{{ customers_count }}</h2>
+                    <p class="mb-0 text-muted">Customers</p>
                 </div>
             </a>
         </div>
         <div class="col-md-3">
             <a href="{% url 'suppliers:supplier_list' %}" class="text-decoration-none">
-                <div class="card stat-card p-4 shadow-sm">
-                    <h2 class="fw-bold text-danger">{{ suppliers_count }}</h2>
-                    <p class="mb-0">Suppliers</p>
+                <div class="card stat-card p-4 shadow-sm bg-dark text-white rounded-4">
+                    <i class="bi bi-truck display-6 text-danger mb-2"></i>
+                    <h2 class="fw-bold">{{ suppliers_count }}</h2>
+                    <p class="mb-0 text-muted">Suppliers</p>
                 </div>
             </a>
         </div>
         <div class="col-md-3">
             <a href="{% url 'inventory:item_list' %}" class="text-decoration-none">
-                <div class="card stat-card p-4 shadow-sm">
-                    <h2 class="fw-bold text-danger">{{ items_count }}</h2>
-                    <p class="mb-0">Items</p>
+                <div class="card stat-card p-4 shadow-sm bg-dark text-white rounded-4">
+                    <i class="bi bi-box-seam display-6 text-danger mb-2"></i>
+                    <h2 class="fw-bold">{{ items_count }}</h2>
+                    <p class="mb-0 text-muted">Items</p>
                 </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mb-5">
+        <h5 class="fw-bold text-danger">Quick Actions</h5>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'orders:order_create' %}" class="btn btn-danger btn-sm">
+                <i class="bi bi-plus-circle"></i> New Order
+            </a>
+            <a href="{% url 'customers:customer_create' %}" class="btn btn-danger btn-sm">
+                <i class="bi bi-person-plus"></i> New Customer
+            </a>
+            <a href="{% url 'suppliers:supplier_create' %}" class="btn btn-danger btn-sm">
+                <i class="bi bi-truck"></i> New Supplier
+            </a>
+            <a href="{% url 'inventory:item_create' %}" class="btn btn-danger btn-sm">
+                <i class="bi bi-box"></i> New Item
             </a>
         </div>
     </div>
 
     <!-- Recent Activity -->
     <div class="row g-4">
+        <!-- Recent Orders -->
         <div class="col-md-6">
-            <div class="card shadow-lg">
+            <div class="card shadow-lg bg-dark text-white rounded-4">
                 <div class="card-body">
                     <h5 class="fw-bold text-danger mb-3">Recent Orders</h5>
                     <ul class="list-group list-group-flush">
                         {% for order in recent_orders %}
                         <li
-                            class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center">
-                            <span><i class="bi bi-cart-check"></i> #{{ order.id }}</span>
+                            class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-cart-check"></i> #{{ order.id }} — {{ order.created_at|date:"M d, H:i"
+                                }}</span>
                             <span class="badge 
                                 {% if order.status == 'COMPLETED' %}bg-success
                                 {% elif order.status == 'PENDING' %}bg-warning text-dark
@@ -70,13 +97,15 @@
                 </div>
             </div>
         </div>
+
+        <!-- Recent Customers -->
         <div class="col-md-6">
-            <div class="card shadow-lg">
+            <div class="card shadow-lg bg-dark text-white rounded-4">
                 <div class="card-body">
                     <h5 class="fw-bold text-danger mb-3">Recent Customers</h5>
                     <ul class="list-group list-group-flush">
                         {% for c in recent_customers %}
-                        <li class="list-group-item bg-dark text-light">
+                        <li class="list-group-item bg-dark text-white">
                             <i class="bi bi-person"></i> {{ c.name }} ({{ c.email }})
                         </li>
                         {% empty %}
@@ -90,5 +119,6 @@
             </div>
         </div>
     </div>
+
 </div>
 {% endblock %}

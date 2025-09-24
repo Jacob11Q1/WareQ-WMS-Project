@@ -9,6 +9,8 @@ from django.db.models import Q
 from .models import Order, OrderItem
 from .forms import OrderForm, OrderItemFormSet
 from inventory.models import Item
+from django.db.models import Count
+from django.utils.timezone import now, timedelta
 
 
 def index(request):
@@ -120,6 +122,45 @@ def order_delete(request, pk):
         return redirect("orders:order_list")
 
     return render(request, "orders/order_confirm_delete.html", {"order": order})
+
+def order_report(request):
+    """Comprehensive report page for orders with charts and insights."""
+    orders = Order.objects.all()
+
+    # Stats
+    stats = {
+        "total_orders": orders.count(),
+        "sales_count": orders.filter(order_type="SALE").count(),
+        "purchase_count": orders.filter(order_type="PURCHASE").count(),
+        "pending_count": orders.filter(status="PENDING").count(),
+        "completed_count": orders.filter(status="COMPLETED").count(),
+        "cancelled_count": orders.filter(status="CANCELLED").count(),
+    }
+
+    # Orders by month (last 6 months)
+    last_6_months = now().date().replace(day=1) - timedelta(days=150)
+    monthly_orders = (
+        orders.filter(created_at__gte=last_6_months)
+        .extra(select={"month": "MONTH(created_at)"})
+        .values("month")
+        .annotate(count=Count("id"))
+        .order_by("month")
+    )
+
+    # Orders by status (for pie chart)
+    status_data = (
+        orders.values("status")
+        .annotate(count=Count("id"))
+        .order_by("status")
+    )
+
+    context = {
+        "stats": stats,
+        "monthly_orders": list(monthly_orders),
+        "status_data": list(status_data),
+        "recent_orders": orders.order_by("-created_at")[:10],
+    }
+    return render(request, "orders/order_report.html", context)
 
 
 # -------------------------

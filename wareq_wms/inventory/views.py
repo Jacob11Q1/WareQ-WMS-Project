@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 
 from .models import Item, StockMovement
 from .forms import ItemForm, StockAdjustmentForm
+from django.db.models import Sum, Count
 
 
 # ----------------------------
@@ -120,6 +121,22 @@ def item_delete(request, pk):
         messages.warning(request, f"Item {item.name} deleted.")
         return redirect("inventory:item_list")
     return render(request, "inventory/item_confirm_delete.html", {"item": item})
+
+def stock_report(request):
+    """Report page for inventory stock levels."""
+    items = Item.objects.all()
+
+    stats = {
+        "total_items": items.count(),
+        "low_stock": items.filter(quantity__lte=5).count(),
+        "out_of_stock": items.filter(quantity=0).count(),
+        "total_quantity": items.aggregate(total=Sum("quantity"))["total"] or 0,
+    }
+
+    return render(request, "inventory/stock_report.html", {
+        "stats": stats,
+        "items": items.order_by("name"),
+    })
 
 
 # ----------------------------

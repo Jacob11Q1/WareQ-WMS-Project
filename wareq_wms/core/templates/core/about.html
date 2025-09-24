@@ -1,32 +1,90 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container py-5 text-center text-light">
-    <h2 class="fw-bold text-danger mb-4">About WareQ</h2>
-    <p class="lead">WareQ is a modern Warehouse Management System designed to help businesses
-        streamline operations, improve accuracy, and grow faster.</p>
+    <!-- Hero -->
+    <h2 class="fw-bold text-danger mb-3">About WareQ</h2>
+    <p class="lead text-white">Empowering warehouses with technology that is fast, secure, and scalable.</p>
 
+    <!-- Small Intro -->
+    <div class="mt-4">
+        <p class="text-white fs-5">
+            WareQ is a modern Warehouse Management System built to help businesses streamline operations,
+            reduce errors, and achieve growth with confidence. Our platform combines speed, security,
+            and scalability so that businesses of all sizes—from startups to enterprises—can operate efficiently.
+        </p>
+    </div>
+
+    <!-- Features -->
     <div class="row g-4 mt-5">
         <div class="col-md-4">
-            <div class="card p-4 bg-dark text-light shadow-lg">
+            <div class="card p-4 bg-dark text-light shadow-lg rounded-4 border border-danger-subtle h-100">
                 <i class="bi bi-lightning-charge display-5 text-danger mb-3"></i>
                 <h5 class="fw-bold">Fast & Efficient</h5>
-                <p>Process orders and manage stock with speed and accuracy.</p>
+                <p class="text-white">Process orders and manage stock with unmatched speed and accuracy.</p>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card p-4 bg-dark text-light shadow-lg">
+            <div class="card p-4 bg-dark text-light shadow-lg rounded-4 border border-danger-subtle h-100">
                 <i class="bi bi-shield-check display-5 text-danger mb-3"></i>
                 <h5 class="fw-bold">Secure & Reliable</h5>
-                <p>Protect your data with industry-grade security.</p>
+                <p class="text-white">Protect your data with industry-grade encryption, backups, and uptime.</p>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card p-4 bg-dark text-light shadow-lg">
+            <div class="card p-4 bg-dark text-light shadow-lg rounded-4 border border-danger-subtle h-100">
                 <i class="bi bi-graph-up display-5 text-danger mb-3"></i>
                 <h5 class="fw-bold">Scalable</h5>
-                <p>From startups to enterprises, WareQ grows with your business.</p>
+                <p class="text-white">Designed to grow with your business, no matter the size or complexity.</p>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="card p-4 bg-dark text-light shadow-lg rounded-4 border border-danger-subtle h-100">
+                <i class="bi bi-ui-checks-grid display-5 text-danger mb-3"></i>
+                <h5 class="fw-bold">User-Friendly</h5>
+                <p class="text-white">Simple dashboards and workflows make it easy for teams to get started quickly.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 bg-dark text-light shadow-lg rounded-4 border border-danger-subtle h-100">
+                <i class="bi bi-bar-chart-line display-5 text-danger mb-3"></i>
+                <h5 class="fw-bold">Real-Time Insights</h5>
+                <p class="text-white">Track inventory, orders, and performance with live reports and analytics.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 bg-dark text-light shadow-lg rounded-4 border border-danger-subtle h-100">
+                <i class="bi bi-headset display-5 text-danger mb-3"></i>
+                <h5 class="fw-bold">24/7 Support</h5>
+                <p class="text-white">Our dedicated team is available around the clock to keep your operations running.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission & Values -->
+    <div class="mt-5">
+        <h4 class="fw-bold text-danger">Our Mission</h4>
+        <p class="text-white">
+            At WareQ, our mission is to remove the complexity of warehouse management by providing
+            a system that’s powerful yet simple to use. We help businesses save time,
+            cut costs, and focus on growth instead of operations.
+        </p>
+
+        <h4 class="fw-bold text-danger mt-4">Our Core Values</h4>
+        <ul class="list-unstyled text-white">
+            <li><i class="bi bi-check-circle text-danger"></i> Efficiency: Making every process seamless.</li>
+            <li><i class="bi bi-check-circle text-danger"></i> Transparency: Clear insights for better decisions.</li>
+            <li><i class="bi bi-check-circle text-danger"></i> Scalability: Building tools that adapt with you.</li>
+        </ul>
+    </div>
+
+    <!-- CTA -->
+    <div class="mt-5 p-5 bg-dark rounded-4 shadow-lg border border-danger-subtle">
+        <h4 class="fw-bold text-danger">Ready to take your warehouse to the next level?</h4>
+        <p class="text-white">Let’s build smarter, faster, and stronger operations together.</p>
+        <a href="{% url 'core:contact' %}" class="btn btn-danger btn-lg mt-3">
+            <i class="bi bi-envelope-fill"></i> Contact Us
+        </a>
     </div>
 </div>
 {% endblock %}

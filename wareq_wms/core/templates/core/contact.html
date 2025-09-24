@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load widget_tweaks %}
 {% block content %}
 <div class="container py-5">
     <h2 class="fw-bold text-danger mb-4 text-center">
@@ -11,27 +12,46 @@
     </div>
     {% endfor %}
 
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card bg-dark text-light shadow-lg p-4">
+    <div class="row g-5 align-items-start">
+        <!-- Contact Form -->
+        <div class="col-lg-6">
+            <div class="card bg-dark text-light shadow-lg p-4 rounded-4 border border-danger-subtle">
+                <h4 class="fw-bold text-danger mb-3"><i class="bi bi-chat-left-text"></i> Send us a Message</h4>
                 <form method="post" novalidate>
                     {% csrf_token %}
                     {{ form.non_field_errors }}
+
+                    <!-- Name -->
                     <div class="mb-3">
-                        {{ form.name.label_tag }}
-                        {{ form.name }}
+                        <label class="form-label fw-semibold">{{ form.name.label }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-danger text-light"><i class="bi bi-person"></i></span>
+                            {{ form.name|add_class:"form-control bg-white text-dark" }}
+                        </div>
                         {{ form.name.errors }}
                     </div>
+
+                    <!-- Email -->
                     <div class="mb-3">
-                        {{ form.email.label_tag }}
-                        {{ form.email }}
+                        <label class="form-label fw-semibold">{{ form.email.label }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-danger text-light"><i class="bi bi-envelope"></i></span>
+                            {{ form.email|add_class:"form-control bg-white text-dark" }}
+                        </div>
                         {{ form.email.errors }}
                     </div>
+
+                    <!-- Message -->
                     <div class="mb-3">
-                        {{ form.message.label_tag }}
-                        {{ form.message }}
+                        <label class="form-label fw-semibold">{{ form.message.label }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-danger text-light"><i class="bi bi-chat-dots"></i></span>
+                            {{ form.message|add_class:"form-control bg-white text-dark" }}
+                        </div>
                         {{ form.message.errors }}
                     </div>
+
+                    <!-- Submit -->
                     <div class="d-grid">
                         <button type="submit" class="btn btn-danger">
                             <i class="bi bi-send-fill"></i> Send Message
@@ -40,22 +60,43 @@
                 </form>
             </div>
         </div>
+
+        <!-- Contact Info & Social -->
+        <div class="col-lg-6 text-center">
+            <div class="mb-4">
+                <div class="p-3 bg-dark rounded-circle d-inline-block shadow-sm">
+                    <i class="bi bi-geo-alt text-danger fs-2"></i>
+                </div>
+                <p class="mt-2">Bethlehem, Palestine</p>
+            </div>
+            <div class="mb-4">
+                <div class="p-3 bg-dark rounded-circle d-inline-block shadow-sm">
+                    <i class="bi bi-envelope text-danger fs-2"></i>
+                </div>
+                <p class="mt-2">support@wareq.com</p>
+            </div>
+            <div class="mb-4">
+                <div class="p-3 bg-dark rounded-circle d-inline-block shadow-sm">
+                    <i class="bi bi-telephone text-danger fs-2"></i>
+                </div>
+                <p class="mt-2">+972 59 729 8205</p>
+            </div>
+
+            <!-- Social Media -->
+            <div class="mt-4">
+                <a href="#" class="btn btn-outline-danger rounded-circle mx-1"><i class="bi bi-linkedin"></i></a>
+                <a href="#" class="btn btn-outline-danger rounded-circle mx-1"><i class="bi bi-github"></i></a>
+                <a href="#" class="btn btn-outline-danger rounded-circle mx-1"><i class="bi bi-twitter-x"></i></a>
+            </div>
+        </div>
     </div>
 
-    <!-- Contact Info -->
-    <div class="row mt-5 text-center">
-        <div class="col-md-4">
-            <i class="bi bi-geo-alt text-danger fs-2"></i>
-            <p class="mt-2">Bethlehem, Palestine</p>
-        </div>
-        <div class="col-md-4">
-            <i class="bi bi-envelope text-danger fs-2"></i>
-            <p class="mt-2">support@wareq.com</p>
-        </div>
-        <div class="col-md-4">
-            <i class="bi bi-telephone text-danger fs-2"></i>
-            <p class="mt-2">+972 59 729 8205</p>
-        </div>
+    <!-- CTA Banner -->
+    <div class="mt-5 p-4 bg-danger text-white text-center rounded-3 shadow-lg">
+        <h4 class="fw-bold mb-2">Want to see WareQ in action?</h4>
+        <p class="mb-3">Book a free demo session with our team and explore how WareQ WMS can transform your workflow.
+        </p>
+        <a href="#" class="btn btn-light fw-bold"><i class="bi bi-calendar-check"></i> Book a Demo</a>
     </div>
 </div>
 {% endblock %}

@@ -13,6 +13,7 @@ urlpatterns = [
     path("<int:pk>/", views.item_detail, name="item_detail"),
     path("<int:pk>/edit/", views.item_update, name="item_update"),
     path("<int:pk>/delete/", views.item_delete, name="item_delete"),
+    path("report/", views.stock_report, name="stock_report"),
 
     # AJAX / JSON endpoints
     path("search-items/", views.search_items, name="search_items"),

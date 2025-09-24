@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5 text-light">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="fw-bold text-danger">
+            <i class="bi bi-file-earmark-text"></i> Orders Report
+        </h2>
+        <a href="{% url 'orders:order_list' %}" class="btn btn-outline-light">
+            <i class="bi bi-arrow-left"></i> Back to Orders
+        </a>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="row g-4 text-center mb-5">
+        <div class="col-md-2">
+            <div class="p-4 bg-dark rounded-4 shadow-sm border border-danger-subtle">
+                <h3 class="fw-bold text-white">{{ stats.total_orders }}</h3>
+                <p class="mb-0">Total Orders</p>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="p-4 bg-dark rounded-4 shadow-sm border border-danger-subtle">
+                <h3 class="fw-bold text-success">{{ stats.sales_count }}</h3>
+                <p class="mb-0">Sales</p>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="p-4 bg-dark rounded-4 shadow-sm border border-danger-subtle">
+                <h3 class="fw-bold text-info">{{ stats.purchase_count }}</h3>
+                <p class="mb-0">Purchases</p>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="p-4 bg-dark rounded-4 shadow-sm border border-danger-subtle">
+                <h3 class="fw-bold text-warning">{{ stats.pending_count }}</h3>
+                <p class="mb-0">Pending</p>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="p-4 bg-dark rounded-4 shadow-sm border border-danger-subtle">
+                <h3 class="fw-bold text-success">{{ stats.completed_count }}</h3>
+                <p class="mb-0">Completed</p>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="p-4 bg-dark rounded-4 shadow-sm border border-danger-subtle">
+                <h3 class="fw-bold text-danger">{{ stats.cancelled_count }}</h3>
+                <p class="mb-0">Cancelled</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-8">
+            <div class="card bg-dark shadow-lg rounded-4 border border-danger-subtle">
+                <div class="card-body">
+                    <h5 class="fw-bold text-danger mb-3"><i class="bi bi-graph-up"></i> Orders by Month</h5>
+                    <canvas id="ordersMonthlyChart" height="120"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark shadow-lg rounded-4 border border-danger-subtle">
+                <div class="card-body">
+                    <h5 class="fw-bold text-danger mb-3"><i class="bi bi-pie-chart"></i> Orders by Status</h5>
+                    <canvas id="ordersStatusChart" height="120"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="card bg-dark shadow-lg rounded-4 border border-danger-subtle">
+        <div class="card-body">
+            <h5 class="fw-bold text-danger mb-3"><i class="bi bi-clock-history"></i> Latest 10 Orders</h5>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle">
+                    <thead class="table-danger text-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in recent_orders %}
+                        <tr>
+                            <td class="text-white">#{{ order.id }}</td>
+                            <td class="text-white">
+                                {% if order.order_type == "SALE" %}
+                                <span class="badge bg-success">Sale</span>
+                                {% else %}
+                                <span class="badge bg-info">Purchase</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-white">
+                                {% if order.status == "PENDING" %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                                {% elif order.status == "COMPLETED" %}
+                                <span class="badge bg-success">Completed</span>
+                                {% else %}
+                                <span class="badge bg-danger">Cancelled</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-white">{{ order.customer|default:"-" }}</td>
+                            <td class="text-white">{{ order.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No recent orders.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Orders by Month
+    const monthlyData = {{ monthly_orders| safe }};
+    const monthlyLabels = monthlyData.map(x => "Month " + x.month);
+    const monthlyCounts = monthlyData.map(x => x.count);
+
+    new Chart(document.getElementById('ordersMonthlyChart'), {
+        type: 'line',
+        data: {
+            labels: monthlyLabels,
+            datasets: [{
+                label: "Orders",
+                data: monthlyCounts,
+                borderColor: 'rgba(220,53,69,1)',
+                backgroundColor: 'rgba(220,53,69,0.2)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#aaa' } }, y: { ticks: { color: '#aaa' } } } }
+    });
+
+    // Orders by Status
+    const statusData = {{ status_data| safe }};
+    const statusLabels = statusData.map(x => x.status);
+    const statusCounts = statusData.map(x => x.count);
+
+    new Chart(document.getElementById('ordersStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusCounts,
+                backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } } } }
+    });
+</script>
+{% endblock %}
