@@ -1,0 +1,169 @@
+/* ================================
+   Orders App Styles (orders.css)
+   ================================ */
+
+/* --- GLOBAL SCOPING --- */
+.page-orders-list,
+.page-orders-edit,
+.page-orders-detail,
+.page-orders-delete,
+.page-orders-invoice,
+.page-orders-dashboard {
+    font-family: "Inter", system-ui, sans-serif;
+}
+
+/* --- REMOVE HOVER + MOTION --- */
+.no-motion,
+.no-motion * {
+    transition: none !important;
+}
+
+.no-hover-table tbody tr:hover {
+    background: transparent !important;
+}
+
+.no-hover,
+.no-hover:hover {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* --- CARDS --- */
+.stat-card {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 1rem;
+    color: #f8f9fa;
+}
+
+.stat-card:hover {
+    transform: none !important;
+    /* no scaling */
+    box-shadow: 0 0 12px rgba(220, 53, 69, 0.2);
+}
+
+/* --- TABLES --- */
+.table-dark {
+    background: #2b2b2b;
+    color: #f8f9fa;
+    border-color: #444;
+}
+
+.table-dark th,
+.table-dark td {
+    border-color: #444;
+}
+
+.custom-thead th {
+    background: #1e1e1e;
+    color: #f8f9fa;
+    border-bottom: 2px solid #dc3545;
+}
+
+.table-dark tbody tr:hover {
+    background: transparent !important;
+    /* no hover highlight */
+}
+
+/* --- INPUTS & SELECTS --- */
+.custom-input,
+.custom-select,
+.form-control,
+.form-select {
+    background: #2b2b2b !important;
+    color: #f8f9fa !important;
+    border: 1px solid #444 !important;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.custom-input::placeholder,
+.form-control::placeholder {
+    color: #aaa !important;
+}
+
+.custom-input:focus,
+.custom-select:focus,
+.form-control:focus,
+.form-select:focus {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 6px rgba(220, 53, 69, 0.45) !important;
+}
+
+/* --- BADGES --- */
+.badge {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.4rem;
+}
+
+/* --- BUTTONS --- */
+.btn {
+    border-radius: 0.5rem;
+}
+
+.btn-outline-light {
+    border-color: #666 !important;
+    color: #f8f9fa !important;
+}
+
+.btn-outline-light:hover {
+    background: #444 !important;
+}
+
+.btn-danger {
+    background: #dc3545;
+    border: none;
+}
+
+.btn-danger:hover {
+    background: #bb2d3b;
+}
+
+/* --- DROPDOWNS (Live search in edit page) --- */
+.live-dropdown {
+    max-height: 220px;
+    overflow-y: auto;
+    background: #2b2b2b;
+    border: 1px solid #444;
+    border-radius: 0.5rem;
+    z-index: 1000;
+}
+
+.live-dropdown .list-group-item {
+    background: #2b2b2b;
+    color: #f8f9fa;
+}
+
+.live-dropdown .list-group-item:hover {
+    background: #3a3a3a;
+    cursor: pointer;
+}
+
+/* --- PAGINATION --- */
+.pagination .page-link {
+    background: #2b2b2b;
+    border: 1px solid #444;
+    color: #f8f9fa;
+}
+
+.pagination .page-link:hover {
+    background: #444;
+    border-color: #dc3545;
+}
+
+.pagination .page-item.disabled .page-link {
+    background: #1e1e1e;
+    color: #666;
+}
+
+/* === Orders Report Styles === */
+.page-orders-report .custom-thead th {
+    background: var(--secondary) !important;
+    color: var(--text-color) !important;
+    border-bottom: 2px solid var(--accent);
+}
+
+.page-orders-report .table-dark tbody tr:hover {
+    background: transparent !important;
+}

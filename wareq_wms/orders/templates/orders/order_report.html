@@ -1,53 +1,58 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="container py-5 text-light">
+{% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'orders/orders.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-orders-report container py-5 text-light">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-5">
         <h2 class="fw-bold text-danger">
             <i class="bi bi-file-earmark-text"></i> Orders Report
         </h2>
         <a href="{% url 'orders:order_list' %}" class="btn btn-outline-light">
-            <i class="bi bi-arrow-left"></i> Back to Orders
+            <i class="bi bi-arrow-left"></i> Back
         </a>
     </div>
 
-    <!-- Stats Overview -->
+    <!-- Stats -->
     <div class="row g-4 text-center mb-5">
         <div class="col-md-2">
-            <div class="p-4 bg-dark rounded-4 shadow-sm border border-danger-subtle">
-                <h3 class="fw-bold">{{ stats.total_orders }}</h3>
-                <p class="mb-0">Total Orders</p>
+            <div class="p-4 bg-dark rounded-4 shadow-sm">
+                <h3>{{ stats.total_orders }}</h3>
+                <p>Total</p>
             </div>
         </div>
         <div class="col-md-2">
-            <div class="p-4 bg-dark rounded-4 shadow-sm border border-danger-subtle">
-                <h3 class="fw-bold text-success">{{ stats.sales_count }}</h3>
-                <p class="mb-0">Sales</p>
+            <div class="p-4 bg-dark rounded-4 shadow-sm">
+                <h3 class="text-success">{{ stats.sales_count }}</h3>
+                <p>Sales</p>
             </div>
         </div>
         <div class="col-md-2">
-            <div class="p-4 bg-dark rounded-4 shadow-sm border border-danger-subtle">
-                <h3 class="fw-bold text-info">{{ stats.purchase_count }}</h3>
-                <p class="mb-0">Purchases</p>
+            <div class="p-4 bg-dark rounded-4 shadow-sm">
+                <h3 class="text-info">{{ stats.purchase_count }}</h3>
+                <p>Purchases</p>
             </div>
         </div>
         <div class="col-md-2">
-            <div class="p-4 bg-dark rounded-4 shadow-sm border border-danger-subtle">
-                <h3 class="fw-bold text-warning">{{ stats.pending_count }}</h3>
-                <p class="mb-0">Pending</p>
+            <div class="p-4 bg-dark rounded-4 shadow-sm">
+                <h3 class="text-warning">{{ stats.pending_count }}</h3>
+                <p>Pending</p>
             </div>
         </div>
         <div class="col-md-2">
-            <div class="p-4 bg-dark rounded-4 shadow-sm border border-danger-subtle">
-                <h3 class="fw-bold text-success">{{ stats.completed_count }}</h3>
-                <p class="mb-0">Completed</p>
+            <div class="p-4 bg-dark rounded-4 shadow-sm">
+                <h3 class="text-success">{{ stats.completed_count }}</h3>
+                <p>Completed</p>
             </div>
         </div>
         <div class="col-md-2">
-            <div class="p-4 bg-dark rounded-4 shadow-sm border border-danger-subtle">
-                <h3 class="fw-bold text-danger">{{ stats.cancelled_count }}</h3>
-                <p class="mb-0">Cancelled</p>
+            <div class="p-4 bg-dark rounded-4 shadow-sm">
+                <h3 class="text-danger">{{ stats.cancelled_count }}</h3>
+                <p>Cancelled</p>
             </div>
         </div>
     </div>
@@ -55,27 +60,33 @@
     <!-- Charts -->
     <div class="row g-4 mb-5">
         <div class="col-md-8">
-            <div class="card bg-dark shadow-lg rounded-4 border border-danger-subtle">
+            <div class="card bg-dark shadow-lg rounded-4">
                 <div class="card-body">
-                    <h5 class="fw-bold text-danger mb-3"><i class="bi bi-graph-up"></i> Orders by Month</h5>
+                    <h5 class="fw-bold text-danger">
+                        <i class="bi bi-graph-up"></i> Orders by Month
+                    </h5>
                     <canvas id="ordersMonthlyChart" height="120"></canvas>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card bg-dark shadow-lg rounded-4 border border-danger-subtle">
+            <div class="card bg-dark shadow-lg rounded-4">
                 <div class="card-body">
-                    <h5 class="fw-bold text-danger mb-3"><i class="bi bi-pie-chart"></i> Orders by Status</h5>
+                    <h5 class="fw-bold text-danger">
+                        <i class="bi bi-pie-chart"></i> Orders by Status
+                    </h5>
                     <canvas id="ordersStatusChart" height="120"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Recent Orders Table -->
-    <div class="card bg-dark shadow-lg rounded-4 border border-danger-subtle">
+    <!-- Recent Orders -->
+    <div class="card bg-dark shadow-lg rounded-4">
         <div class="card-body">
-            <h5 class="fw-bold text-danger mb-3"><i class="bi bi-clock-history"></i> Latest 10 Orders</h5>
+            <h5 class="fw-bold text-danger">
+                <i class="bi bi-clock-history"></i> Latest 10 Orders
+            </h5>
             <div class="table-responsive">
                 <table class="table table-dark align-middle mb-0">
                     <thead class="custom-thead">
@@ -122,68 +133,43 @@
     </div>
 </div>
 
-<style>
-    /* Professional dark header */
-    .custom-thead th {
-        background-color: var(--secondary) !important;
-        color: var(--text-color) !important;
-        border-bottom: 2px solid var(--accent);
-    }
-
-    /* Remove hover effects */
-    .table-dark tbody tr:hover {
-        background-color: transparent !important;
-        transform: none !important;
-        box-shadow: none !important;
-    }
-</style>
-
-<!-- Chart.js -->
+{% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Orders by Month
     const monthlyData = {{ monthly_orders| safe }};
-    const monthlyLabels = monthlyData.map(x => "Month " + x.month);
-    const monthlyCounts = monthlyData.map(x => x.count);
+    const statusData = {{ status_data| safe }};
 
+    // Line chart
     new Chart(document.getElementById('ordersMonthlyChart'), {
         type: 'line',
         data: {
-            labels: monthlyLabels,
+            labels: monthlyData.map(x => "Month " + x.month),
             datasets: [{
                 label: "Orders",
-                data: monthlyCounts,
-                borderColor: 'rgba(220,53,69,1)',
+                data: monthlyData.map(x => x.count),
+                borderColor: '#dc3545',
                 backgroundColor: 'rgba(220,53,69,0.2)',
                 fill: true,
                 tension: 0.4
             }]
         },
         options: {
-            responsive: true,
             plugins: { legend: { labels: { color: '#fff' } } },
             scales: { x: { ticks: { color: '#aaa' } }, y: { ticks: { color: '#aaa' } } }
         }
     });
 
-    // Orders by Status
-    const statusData = {{ status_data| safe }};
-    const statusLabels = statusData.map(x => x.status);
-    const statusCounts = statusData.map(x => x.count);
-
+    // Doughnut chart
     new Chart(document.getElementById('ordersStatusChart'), {
         type: 'doughnut',
         data: {
-            labels: statusLabels,
+            labels: statusData.map(x => x.status),
             datasets: [{
-                data: statusCounts,
+                data: statusData.map(x => x.count),
                 backgroundColor: ['#28a745', '#ffc107', '#dc3545']
             }]
         },
-        options: {
-            responsive: true,
-            plugins: { legend: { labels: { color: '#fff' } } }
-        }
+        options: { plugins: { legend: { labels: { color: '#fff' } } } }
     });
 </script>
 {% endblock %}

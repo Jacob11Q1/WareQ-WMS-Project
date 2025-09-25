@@ -1,96 +1,73 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'orders/orders.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <div class="card shadow-lg border-0">
-        <div class="card-body p-5">
+<div class="page-invoice">
+    <div class="container my-5">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-5">
+                <!-- Header -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-4">
+                    <h2 class="fw-bold text-danger">
+                        <i class="bi bi-receipt"></i> Invoice #{{ order.id }}
+                    </h2>
+                    <span class="badge 
+                        {% if order.status == 'COMPLETED' %} bg-success
+                        {% elif order.status == 'PENDING' %} bg-warning text-dark
+                        {% elif order.status == 'CANCELLED' %} bg-danger
+                        {% else %} bg-secondary {% endif %}
+                        fs-6 px-3 py-2">
+                        {{ order.status }}
+                    </span>
+                </div>
 
-            <!-- Header -->
-            <div
-                class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-                <h2 class="fw-bold text-danger mb-3 mb-md-0">
-                    <i class="bi bi-receipt"></i> Invoice #{{ order.invoice_number }}
-                </h2>
-                <span class="badge 
-                    {% if order.status == 'COMPLETED' %} bg-success
-                    {% elif order.status == 'PENDING' %} bg-warning text-dark
-                    {% elif order.status == 'CANCELLED' %} bg-danger
-                    {% else %} bg-secondary {% endif %}
-                    fs-6 px-3 py-2">
-                    {{ order.status }}
-                </span>
-            </div>
+                <!-- Items -->
+                <div class="table-responsive">
+                    <table class="table table-dark table-bordered align-middle">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-end">Price</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in order.items.all %}
+                            <tr>
+                                <td>{{ i.item.name }}</td>
+                                <td class="text-center">{{ i.quantity }}</td>
+                                <td class="text-end">${{ i.price }}</td>
+                                <td class="text-end">${{ i.total_price }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No items found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
-            <!-- Meta Info -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <h6 class="fw-bold text-danger"><i class="bi bi-building"></i> From:</h6>
-                    <div class="p-3 rounded bg-dark bg-opacity-10">
-                        <p class="mb-1 fw-semibold">{{ company.name }}</p>
-                        <p class="mb-1"><i class="bi bi-envelope"></i> {{ company.email }}</p>
-                        <p class="mb-1"><i class="bi bi-telephone"></i> {{ company.phone }}</p>
-                        <p class="mb-0"><i class="bi bi-geo-alt"></i> {{ company.address }}</p>
+                <!-- Totals -->
+                <div class="d-flex justify-content-end mt-4">
+                    <div class="p-3 grand-total-box text-end">
+                        <h5 class="fw-bold mb-1">Grand Total</h5>
+                        <h3 class="fw-bold text-danger">${{ order.total_amount }}</h3>
                     </div>
                 </div>
-                <div class="col-md-6 text-md-end mt-4 mt-md-0">
-                    <h6 class="fw-bold text-danger"><i class="bi bi-person-fill"></i> To:</h6>
-                    <div class="p-3 rounded bg-dark bg-opacity-10">
-                        {% if order.customer %}
-                        <p class="mb-1 fw-semibold">{{ order.customer.name }}</p>
-                        <p class="mb-1"><i class="bi bi-envelope"></i> {{ order.customer.email }}</p>
-                        <p class="mb-0"><i class="bi bi-telephone"></i> {{ order.customer.phone }}</p>
-                        {% elif order.supplier %}
-                        <p class="mb-1 fw-semibold">{{ order.supplier.name }}</p>
-                        <p class="mb-1"><i class="bi bi-envelope"></i> {{ order.supplier.email }}</p>
-                        <p class="mb-0"><i class="bi bi-telephone"></i> {{ order.supplier.phone }}</p>
-                        {% else %}
-                        <p class="mb-0">-</p>
-                        {% endif %}
-                    </div>
+
+                <!-- Footer -->
+                <div class="mt-5 text-center text-muted small">
+                    <p>Thank you for your business.</p>
+                    <a href="?format=pdf" class="btn btn-outline-danger btn-sm px-3">
+                        <i class="bi bi-download"></i> Download PDF
+                    </a>
                 </div>
-            </div>
-
-            <!-- Items -->
-            <div class="table-responsive">
-                <table class="table table-dark table-hover table-bordered align-middle rounded overflow-hidden">
-                    <thead class="bg-danger text-light">
-                        <tr>
-                            <th>Item</th>
-                            <th class="text-center">Qty</th>
-                            <th class="text-end">Price</th>
-                            <th class="text-end">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for oi in order.items.all %}
-                        <tr>
-                            <td>{{ oi.item.name }}</td>
-                            <td class="text-center">{{ oi.quantity }}</td>
-                            <td class="text-end">${{ oi.price }}</td>
-                            <td class="text-end">${{ oi.total_price }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" class="text-center text-muted">No items found.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Totals -->
-            <div class="d-flex justify-content-end mt-4">
-                <div class="p-3 bg-dark bg-opacity-10 rounded text-end">
-                    <h5 class="fw-bold mb-1">Grand Total</h5>
-                    <h3 class="fw-bold text-danger">${{ order.total_amount }}</h3>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="mt-5 text-center text-muted small">
-                <p class="mb-2">Thank you for your business.</p>
-                <a href="?format=pdf" class="btn btn-outline-danger btn-sm px-3">
-                    <i class="bi bi-download"></i> Download PDF
-                </a>
             </div>
         </div>
     </div>

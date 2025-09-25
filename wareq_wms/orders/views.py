@@ -8,7 +8,8 @@ from django.db.models import Q, Count
 from django.utils.timezone import now, timedelta
 from django.template.loader import render_to_string
 
-from xhtml2pdf import pisa   # ✅ replace weasyprint
+# PDF generator (xhtml2pdf for better compatibility)
+from xhtml2pdf import pisa
 from io import BytesIO
 
 from .models import Order, OrderItem
@@ -16,11 +17,14 @@ from .forms import OrderForm, OrderItemFormSet
 from inventory.models import Item
 
 
-# -------------------------
-# Dashboard
-# -------------------------
+# ============================================================
+# DASHBOARD
+# ============================================================
 def index(request):
-    """Orders dashboard with stats + recent orders."""
+    """
+    Orders dashboard.
+    Shows quick stats and the 5 most recent orders.
+    """
     orders = Order.objects.order_by("-created_at")
     context = {
         "sales_count": orders.filter(order_type="SALE").count(),
@@ -32,24 +36,29 @@ def index(request):
     return render(request, "orders/index.html", context)
 
 
-# -------------------------
-# CRUD Views
-# -------------------------
+# ============================================================
+# CRUD VIEWS
+# ============================================================
 def order_list(request):
-    """List all orders with filters, search, and pagination."""
+    """
+    Paginated list of all orders.
+    Includes:
+    - Filter by status
+    - Search by customer or supplier
+    """
     orders = (
         Order.objects
-        .select_related("customer", "supplier")
-        .prefetch_related("items")
+        .select_related("customer", "supplier")   # optimize queries
+        .prefetch_related("items")                # preload items
         .order_by("-created_at")
     )
 
-    # Filter by status
+    # Filter by status (dropdown)
     status = request.GET.get("status", "")
     if status:
         orders = orders.filter(status=status)
 
-    # Search by customer or supplier
+    # Search by customer or supplier (query param)
     q = request.GET.get("q", "")
     if q:
         orders = orders.filter(
@@ -57,7 +66,8 @@ def order_list(request):
             Q(supplier__name__icontains=q)
         )
 
-    paginator = Paginator(orders, 10)
+    # Paginate results
+    paginator = Paginator(orders, 10)  # 10 per page
     page = request.GET.get("page")
     orders = paginator.get_page(page)
 
@@ -69,36 +79,61 @@ def order_list(request):
 
 
 def order_detail(request, pk):
-    """Detailed view of one order with its items."""
-    order = get_object_or_404(Order.objects.prefetch_related("items__item"), pk=pk)
+    """
+    Show details for a single order.
+    Includes:
+    - Customer/Supplier info
+    - Items in the order
+    - Status dropdown (AJAX powered)
+    """
+    order = get_object_or_404(
+        Order.objects.prefetch_related("items__item"),
+        pk=pk
+    )
     return render(request, "orders/order_detail.html", {"order": order})
 
 
 @transaction.atomic
 def order_create(request):
-    """Create a new order with inline items (formset)."""
+    """
+    Create a new order + order items (inline formset).
+    Always starts with status = PENDING.
+    """
     if request.method == "POST":
         form = OrderForm(request.POST)
         formset = OrderItemFormSet(request.POST)
+
         if form.is_valid() and formset.is_valid():
             order = form.save(commit=False)
-            order.status = "PENDING"
+            order.status = "PENDING"   # enforce initial state
             order.save()
+
+            # Link items to this order
             formset.instance = order
             formset.save()
+
             messages.success(request, f"Order #{order.id} created successfully!")
             return redirect("orders:order_detail", pk=order.id)
         else:
             messages.error(request, "Please fix the errors below.")
+
     else:
         form = OrderForm()
         formset = OrderItemFormSet()
-    return render(request, "orders/order_form.html", {"form": form, "formset": formset})
+
+    return render(request, "orders/order_form.html", {
+        "form": form,
+        "formset": formset,
+    })
 
 
 @transaction.atomic
 def order_update(request, pk):
-    """Update order and its items."""
+    """
+    Edit an existing order.
+    Business rules:
+    - Completed/Cancelled orders cannot be edited.
+    """
     order = get_object_or_404(Order, pk=pk)
 
     if not order.is_editable():
@@ -108,6 +143,7 @@ def order_update(request, pk):
     if request.method == "POST":
         form = OrderForm(request.POST, instance=order)
         formset = OrderItemFormSet(request.POST, instance=order)
+
         if form.is_valid() and formset.is_valid():
             form.save()
             formset.save()
@@ -115,14 +151,24 @@ def order_update(request, pk):
             return redirect("orders:order_detail", pk=order.id)
         else:
             messages.error(request, "Please fix the errors below.")
+
     else:
         form = OrderForm(instance=order)
         formset = OrderItemFormSet(instance=order)
-    return render(request, "orders/order_form.html", {"form": form, "formset": formset, "order": order})
+
+    return render(request, "orders/order_form.html", {
+        "form": form,
+        "formset": formset,
+        "order": order,
+    })
 
 
 def order_delete(request, pk):
-    """Confirm and delete an order."""
+    """
+    Delete confirmation page for an order.
+    Business rules:
+    - Completed orders cannot be deleted.
+    """
     order = get_object_or_404(Order, pk=pk)
 
     if not order.can_be_deleted():
@@ -137,12 +183,20 @@ def order_delete(request, pk):
     return render(request, "orders/order_confirm_delete.html", {"order": order})
 
 
-# -------------------------
-# Reports & Invoice
-# -------------------------
+# ============================================================
+# REPORTS & INVOICES
+# ============================================================
 def order_report(request):
-    """Comprehensive report page for orders with charts and insights."""
+    """
+    Generate a report with:
+    - Stats (sales, purchases, pending, etc.)
+    - Monthly trend chart
+    - Status pie chart
+    - Recent 10 orders
+    """
     orders = Order.objects.all()
+
+    # Summary counts
     stats = {
         "total_orders": orders.count(),
         "sales_count": orders.filter(order_type="SALE").count(),
@@ -152,6 +206,7 @@ def order_report(request):
         "cancelled_count": orders.filter(status="CANCELLED").count(),
     }
 
+    # Last 5 months
     last_6_months = now().date().replace(day=1) - timedelta(days=150)
     monthly_orders = (
         orders.filter(created_at__gte=last_6_months)
@@ -161,6 +216,7 @@ def order_report(request):
         .order_by("month")
     )
 
+    # By status
     status_data = (
         orders.values("status")
         .annotate(count=Count("id"))
@@ -177,10 +233,15 @@ def order_report(request):
 
 
 def order_invoice(request, pk):
-    """Generate invoice (HTML preview or downloadable PDF)."""
+    """
+    Generate invoice for a specific order.
+    - Preview in browser (HTML)
+    - Download as PDF (?format=pdf)
+    """
     order = get_object_or_404(Order.objects.prefetch_related("items__item"), pk=pk)
     html = render_to_string("orders/order_invoice.html", {"order": order})
 
+    # If PDF requested
     if request.GET.get("format") == "pdf":
         response = HttpResponse(content_type="application/pdf")
         response["Content-Disposition"] = f'filename="invoice_{order.id}.pdf"'
@@ -190,15 +251,18 @@ def order_invoice(request, pk):
             return HttpResponse("Error generating PDF", status=500)
         return response
 
+    # Otherwise just render HTML
     return HttpResponse(html)
 
 
-# -------------------------
-# AJAX Endpoints
-# -------------------------
+# ============================================================
+# AJAX ENDPOINTS
+# ============================================================
 @require_POST
 def update_status(request, pk):
-    """AJAX: update order status without page reload."""
+    """
+    AJAX endpoint to update order status without page reload.
+    """
     order = get_object_or_404(Order, pk=pk)
     new_status = request.POST.get("status")
 
@@ -211,9 +275,13 @@ def update_status(request, pk):
 
 
 def search_items(request):
-    """AJAX: search items for autocomplete in order form."""
+    """
+    AJAX endpoint for item autocomplete in order form.
+    Returns top 10 matching items.
+    """
     q = request.GET.get("q", "")
     items = Item.objects.filter(name__icontains=q)[:10]
+
     results = [
         {"id": item.id, "name": item.name, "price": str(item.price)}
         for item in items

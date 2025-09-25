@@ -1,7 +1,6 @@
 import factory
 from faker import Faker
 from django.utils import timezone
-from decimal import Decimal
 from .models import Order, OrderItem
 from customers.factories import CustomerFactory
 from suppliers.factories import SupplierFactory
@@ -11,6 +10,8 @@ fake = Faker()
 
 
 class OrderFactory(factory.django.DjangoModelFactory):
+    """Factory for generating fake Orders (testing/demo)."""
+
     class Meta:
         model = Order
 
@@ -19,7 +20,7 @@ class OrderFactory(factory.django.DjangoModelFactory):
         ["PENDING", "PROCESSING", "COMPLETED", "CANCELLED"]
     ))
 
-    # Link customer only if SALE, supplier only if PURCHASE
+    # Conditional foreign keys
     customer = factory.Maybe(
         factory.LazyAttribute(lambda o: o.order_type == "SALE"),
         yes_declaration=factory.SubFactory(CustomerFactory),
@@ -36,23 +37,25 @@ class OrderFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def items(self, create, extracted, **kwargs):
-        """Auto-create OrderItems after Order is created"""
+        """Auto-create OrderItems for this order."""
         if not create:
             return
 
-        if extracted:  # If we pass items manually
+        if extracted:  # items passed manually
             for item in extracted:
                 OrderItemFactory(order=self, item=item)
-        else:  # Otherwise generate random items
+        else:  # random items
             for _ in range(fake.random_int(min=1, max=3)):
                 OrderItemFactory(order=self)
 
 
 class OrderItemFactory(factory.django.DjangoModelFactory):
+    """Factory for line items inside an order."""
+
     class Meta:
         model = OrderItem
 
     order = factory.SubFactory(OrderFactory, items=None)  # prevent recursion
     item = factory.SubFactory(ItemFactory)
     quantity = factory.LazyAttribute(lambda _: fake.random_int(min=1, max=10))
-    price = factory.SelfAttribute("item.price")  # always matches item price
+    price = factory.SelfAttribute("item.price")

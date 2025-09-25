@@ -1,7 +1,12 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'orders/orders.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="page-orders-edit"> {# scope all fixes to this page #}
+<div class="page-orders-edit">
     <div class="container py-5 d-flex justify-content-center">
         <div class="card shadow-lg bg-dark text-light w-100 no-motion" style="max-width: 950px; border-radius: 1rem;">
             <div class="card-body p-5">
@@ -14,38 +19,28 @@
                     {% endif %}
                 </h2>
 
-                <!-- Form -->
+                <!-- Order Form -->
                 <form method="post" id="orderForm" novalidate>
                     {% csrf_token %}
 
-                    <!-- Order Info -->
+                    <!-- Basic Info -->
                     <div class="row g-4">
-                        <div class="col-md-6">
-                            {{ form.order_type|as_crispy_field }}
-                        </div>
+                        <div class="col-md-6">{{ form.order_type }}</div>
                         {% if form.instance.pk %}
-                        <div class="col-md-6">
-                            {{ form.status|as_crispy_field }}
-                        </div>
+                        <div class="col-md-6">{{ form.status }}</div>
                         {% endif %}
                     </div>
-
                     <div class="row g-4 mt-2">
-                        <div class="col-md-6">
-                            {{ form.customer|as_crispy_field }}
-                        </div>
-                        <div class="col-md-6">
-                            {{ form.supplier|as_crispy_field }}
-                        </div>
+                        <div class="col-md-6">{{ form.customer }}</div>
+                        <div class="col-md-6">{{ form.supplier }}</div>
                     </div>
 
-                    <!-- Order Items -->
+                    <!-- Items -->
                     <h4 class="text-danger mt-5 mb-3"><i class="bi bi-box-seam"></i> Order Items</h4>
                     {{ formset.management_form }}
 
                     <div class="table-responsive">
-                        <table class="table table-dark align-middle mb-0 no-hover-table" id="orderItemsTable"
-                            style="border-color:#444;">
+                        <table class="table table-dark align-middle mb-0 no-hover-table" id="orderItemsTable">
                             <thead class="table-dark">
                                 <tr>
                                     <th>Item</th>
@@ -56,18 +51,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for form in formset %}
+                                {% for f in formset %}
                                 <tr>
                                     <td class="cell-relative">
                                         <input type="text" class="form-control item-search mb-2"
-                                            placeholder="Search item..." autocomplete="off"
-                                            data-input-id="{{ form.item.id_for_label }}">
-                                        {{ form.item }}
+                                            placeholder="Search item..." data-input-id="{{ f.item.id_for_label }}">
+                                        {{ f.item }}
                                     </td>
-                                    <td class="text-center">{{ form.quantity }}</td>
-                                    <td class="price-field text-end">{{ form.price }}</td>
+                                    <td class="text-center">{{ f.quantity }}</td>
+                                    <td class="price-field text-end">{{ f.price }}</td>
                                     <td class="row-total fw-semibold text-end">$0.00</td>
-                                    <td class="text-center">{{ form.DELETE }}</td>
+                                    <td class="text-center">{{ f.DELETE }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -91,159 +85,69 @@
             </div>
         </div>
     </div>
-
-    <!-- Scripts -->
-    <script>
-        // -------- Live item search (clean + closes on outside click) --------
-        const closeAllDropdowns = () => {
-            document.querySelectorAll(".live-dropdown").forEach(dd => dd.remove());
-        };
-
-        document.addEventListener("click", (e) => {
-            if (!e.target.closest(".cell-relative")) closeAllDropdowns();
-        });
-
-        document.querySelectorAll(".item-search").forEach(input => {
-            input.addEventListener("keyup", function () {
-                const q = this.value.trim();
-                const hiddenInputId = this.dataset.inputId;
-
-                // clear when short query
-                const old = this.parentNode.querySelector(".live-dropdown");
-                if (old) old.remove();
-                if (q.length < 2) return;
-
-                fetch(`/orders/search-items/?q=${encodeURIComponent(q)}`)
-                    .then(res => res.json())
-                    .then(items => {
-                        if (!items.length) return;
-
-                        const dropdown = document.createElement("ul");
-                        dropdown.className = "list-group position-absolute live-dropdown";
-                        dropdown.style.width = this.offsetWidth + "px";
-                        dropdown.style.top = (this.offsetTop + this.offsetHeight) + "px";
-                        dropdown.style.left = this.offsetLeft + "px";
-
-                        items.forEach(item => {
-                            const li = document.createElement("li");
-                            li.className = "list-group-item list-group-item-action";
-                            li.textContent = `${item.name} ($${item.price})`;
-                            li.onclick = () => {
-                                document.getElementById(hiddenInputId).value = item.id;
-                                this.value = item.name;
-                                dropdown.remove();
-                                const priceInput = this.closest("tr").querySelector(".price-field input");
-                                if (priceInput) priceInput.value = item.price;
-                                updateTotals();
-                            };
-                            dropdown.appendChild(li);
-                        });
-
-                        this.parentNode.appendChild(dropdown);
-                    });
-            });
-        });
-
-        // -------- Totals --------
-        function updateTotals() {
-            let grand = 0;
-            document.querySelectorAll("#orderItemsTable tbody tr").forEach(row => {
-                const qty = parseFloat(row.querySelector("input[name$='quantity']")?.value) || 0;
-                const price = parseFloat(row.querySelector("input[name$='price']")?.value) || 0;
-                const total = qty * price;
-                const totalCell = row.querySelector(".row-total");
-                if (totalCell) totalCell.textContent = `$${total.toFixed(2)}`;
-                grand += total;
-            });
-            const grandEl = document.getElementById("grandTotal");
-            if (grandEl) grandEl.textContent = `$${grand.toFixed(2)}`;
-        }
-
-        document.querySelectorAll("input[name$='quantity'], input[name$='price']")
-            .forEach(i => i.addEventListener("input", updateTotals));
-
-        updateTotals();
-    </script>
-
-
-    <style>
-        /* --- Stop ALL hover/motion just for this page --- */
-        .page-orders-edit .no-motion,
-        .page-orders-edit .no-motion * {
-            transition: none !important;
-        }
-
-        .page-orders-edit .no-motion.card:hover {
-            transform: none !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
-        }
-
-        .page-orders-edit .no-hover-table tbody tr:hover {
-            background: transparent !important;
-        }
-
-        /* --- Dark form controls (inputs + selects + textarea) --- */
-        .page-orders-edit .form-control,
-        .page-orders-edit .form-select,
-        .page-orders-edit textarea {
-            background-color: var(--secondary) !important;
-            color: var(--text-color) !important;
-            border: 1px solid #444 !important;
-        }
-
-        .page-orders-edit .form-control::placeholder {
-            color: #cfcfcf !important;
-            opacity: 0.8;
-        }
-
-        .page-orders-edit .form-control:focus,
-        .page-orders-edit .form-select:focus,
-        .page-orders-edit textarea:focus {
-            border-color: var(--accent) !important;
-            box-shadow: 0 0 6px rgba(220, 53, 69, 0.45) !important;
-            outline: none !important;
-        }
-
-        /* Make <option> text visible in dark selects */
-        .page-orders-edit .form-select option {
-            background-color: #2b2b2b;
-            color: #f8f9fa;
-        }
-
-        /* Item search field (inherits dark control styles) */
-        .page-orders-edit .item-search {}
-
-        /* Ensure dropdown positions correctly within the cell */
-        .page-orders-edit #orderItemsTable td.cell-relative {
-            position: relative;
-        }
-
-        /* Live search dropdown styling */
-        .page-orders-edit .live-dropdown {
-            z-index: 2000;
-            max-height: 220px;
-            overflow-y: auto;
-            background: #2b2b2b;
-            border: 1px solid #444;
-            border-radius: .5rem;
-        }
-
-        .page-orders-edit .live-dropdown .list-group-item {
-            background: #2b2b2b;
-            color: #f8f9fa;
-            border: none;
-            padding: .5rem .75rem;
-        }
-
-        .page-orders-edit .live-dropdown .list-group-item:hover {
-            background: #3a3a3a;
-            cursor: pointer;
-        }
-
-        /* Numeric alignment for clarity */
-        .page-orders-edit .text-end input {
-            text-align: right;
-        }
-    </style>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ====== Live Item Search ======
+    function closeAllDropdowns() {
+        document.querySelectorAll(".live-dropdown").forEach(dd => dd.remove());
+    }
+    document.addEventListener("click", e => {
+        if (!e.target.closest(".cell-relative")) closeAllDropdowns();
+    });
+
+    document.querySelectorAll(".item-search").forEach(input => {
+        input.addEventListener("keyup", function () {
+            const q = this.value.trim();
+            const hiddenInputId = this.dataset.inputId;
+            closeAllDropdowns();
+            if (q.length < 2) return;
+
+            fetch(`/orders/search-items/?q=${encodeURIComponent(q)}`)
+                .then(res => res.json())
+                .then(items => {
+                    if (!items.length) return;
+                    const dropdown = document.createElement("ul");
+                    dropdown.className = "list-group position-absolute live-dropdown";
+                    dropdown.style.width = this.offsetWidth + "px";
+
+                    items.forEach(item => {
+                        const li = document.createElement("li");
+                        li.className = "list-group-item list-group-item-action";
+                        li.textContent = `${item.name} ($${item.price})`;
+                        li.onclick = () => {
+                            document.getElementById(hiddenInputId).value = item.id;
+                            this.value = item.name;
+                            dropdown.remove();
+                            const priceInput = this.closest("tr").querySelector(".price-field input");
+                            if (priceInput) priceInput.value = item.price;
+                            updateTotals();
+                        };
+                        dropdown.appendChild(li);
+                    });
+                    this.parentNode.appendChild(dropdown);
+                });
+        });
+    });
+
+    // ====== Totals Calculation ======
+    function updateTotals() {
+        let grand = 0;
+        document.querySelectorAll("#orderItemsTable tbody tr").forEach(row => {
+            const qty = parseFloat(row.querySelector("input[name$='quantity']")?.value) || 0;
+            const price = parseFloat(row.querySelector("input[name$='price']")?.value) || 0;
+            const total = qty * price;
+            row.querySelector(".row-total").textContent = `$${total.toFixed(2)}`;
+            grand += total;
+        });
+        document.getElementById("grandTotal").textContent = `$${grand.toFixed(2)}`;
+    }
+
+    document.querySelectorAll("input[name$='quantity'], input[name$='price']")
+        .forEach(i => i.addEventListener("input", updateTotals));
+
+    updateTotals();
+</script>
 {% endblock %}
