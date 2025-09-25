@@ -58,8 +58,8 @@
                 </a>
             </div>
 
-            <table class="table table-dark table-hover align-middle mb-0">
-                <thead>
+            <table class="table table-dark align-middle mb-0">
+                <thead class="custom-thead">
                     <tr>
                         <th>#</th>
                         <th>Type</th>
@@ -117,4 +117,30 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* Fix dropdowns globally for dark theme */
+    .form-select {
+        background-color: var(--secondary) !important;
+        color: var(--text-color) !important;
+        border: 1px solid var(--secondary);
+    }
+
+    .form-select option {
+        background-color: var(--secondary);
+        color: var(--text-color);
+    }
+
+    .form-select:focus {
+        border: 2px solid var(--accent) !important;
+        box-shadow: none !important;
+    }
+
+    /* Table header style */
+    .custom-thead th {
+        background-color: var(--secondary) !important;
+        color: var(--text-color) !important;
+        border-bottom: 2px solid var(--accent);
+    }
+</style>
 {% endblock %}

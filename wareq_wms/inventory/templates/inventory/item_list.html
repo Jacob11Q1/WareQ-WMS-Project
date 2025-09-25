@@ -22,8 +22,8 @@
     <!-- Table -->
     <div class="card shadow-lg bg-dark text-light">
         <div class="card-body table-responsive">
-            <table class="table table-dark table-hover align-middle mb-0">
-                <thead class="text-danger">
+            <table class="table table-dark align-middle mb-0">
+                <thead class="custom-thead">
                     <tr>
                         <th>#</th>
                         <th>SKU</th>
@@ -161,4 +161,43 @@
         });
     });
 </script>
+
+<style>
+    /* Fix table header style */
+    .custom-thead th {
+        background-color: var(--secondary) !important;
+        color: var(--text-color) !important;
+        border-bottom: 2px solid var(--accent);
+    }
+
+    /* Keep table still (no hover expansion) */
+    .table-dark tbody tr:hover {
+        background-color: transparent !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Fix dropdowns and inputs visibility */
+    .form-select,
+    .form-control {
+        background-color: var(--secondary) !important;
+        color: var(--text-color) !important;
+        border: 1px solid var(--secondary);
+    }
+
+    .form-select:focus,
+    .form-control:focus {
+        border: 2px solid var(--accent) !important;
+        box-shadow: none !important;
+    }
+
+    /* Fix white placeholder only in this page */
+    .form-control::placeholder,
+    .form-select::placeholder {
+        color: #f8f9fa !important;
+        /* White text */
+        opacity: 0.8;
+        /* Slightly dim */
+    }
+</style>
 {% endblock %}

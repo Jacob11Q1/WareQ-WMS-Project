@@ -2,12 +2,15 @@
 {% load widget_tweaks %}
 {% block content %}
 <div class="auth-wrapper d-flex justify-content-center align-items-center py-5">
-    <div class="auth-card p-5 shadow-lg text-light bg-dark rounded-3" style="max-width: 400px; width: 100%;">
+    <div class="auth-card p-5 shadow-lg bg-dark text-light rounded-3 no-motion" style="max-width: 420px; width: 100%;">
+
+        <!-- Title -->
         <div class="text-center mb-4">
             <h2 class="fw-bold text-danger"><i class="bi bi-person-plus"></i> Register</h2>
             <p class="text-muted">Create your account</p>
         </div>
 
+        <!-- Messages -->
         {% if messages %}
         {% for message in messages %}
         <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -17,6 +20,7 @@
         {% endfor %}
         {% endif %}
 
+        <!-- Form -->
         <form method="post" novalidate>
             {% csrf_token %}
 
@@ -25,7 +29,7 @@
                 <label class="form-label fw-semibold">{{ form.username.label }}</label>
                 <div class="input-group">
                     <span class="input-group-text bg-danger text-light"><i class="bi bi-person"></i></span>
-                    {{ form.username|add_class:"form-control bg-white text-dark" }}
+                    {{ form.username|add_class:"form-control form-control-dark" }}
                 </div>
                 {% if form.username.errors %}
                 <div class="text-danger small mt-1">{{ form.username.errors|join:", " }}</div>
@@ -37,7 +41,7 @@
                 <label class="form-label fw-semibold">{{ form.email.label }}</label>
                 <div class="input-group">
                     <span class="input-group-text bg-danger text-light"><i class="bi bi-envelope"></i></span>
-                    {{ form.email|add_class:"form-control bg-white text-dark" }}
+                    {{ form.email|add_class:"form-control form-control-dark" }}
                 </div>
                 {% if form.email.errors %}
                 <div class="text-danger small mt-1">{{ form.email.errors|join:", " }}</div>
@@ -49,8 +53,8 @@
                 <label class="form-label fw-semibold">{{ form.password1.label }}</label>
                 <div class="input-group">
                     <span class="input-group-text bg-danger text-light"><i class="bi bi-lock"></i></span>
-                    {{ form.password1|add_class:"form-control bg-white text-dark"|attr:"id:id_password1" }}
-                    <button type="button" class="btn btn-outline-secondary"
+                    {{ form.password1|add_class:"form-control form-control-dark"|attr:"id:id_password1" }}
+                    <button type="button" class="btn btn-outline-secondary toggle-btn"
                         onclick="togglePassword('id_password1', this)">
                         <i class="bi bi-eye"></i>
                     </button>
@@ -65,8 +69,8 @@
                 <label class="form-label fw-semibold">{{ form.password2.label }}</label>
                 <div class="input-group">
                     <span class="input-group-text bg-danger text-light"><i class="bi bi-lock-fill"></i></span>
-                    {{ form.password2|add_class:"form-control bg-white text-dark"|attr:"id:id_password2" }}
-                    <button type="button" class="btn btn-outline-secondary"
+                    {{ form.password2|add_class:"form-control form-control-dark"|attr:"id:id_password2" }}
+                    <button type="button" class="btn btn-outline-secondary toggle-btn"
                         onclick="togglePassword('id_password2', this)">
                         <i class="bi bi-eye"></i>
                     </button>
@@ -91,21 +95,55 @@
     </div>
 </div>
 
-<!-- Password toggle script -->
+<!-- Password toggle -->
 <script>
     function togglePassword(fieldId, btn) {
         const input = document.getElementById(fieldId);
         const icon = btn.querySelector("i");
-
         if (input.type === "password") {
             input.type = "text";
-            icon.classList.remove("bi-eye");
-            icon.classList.add("bi-eye-slash");
+            icon.classList.replace("bi-eye", "bi-eye-slash");
         } else {
             input.type = "password";
-            icon.classList.remove("bi-eye-slash");
-            icon.classList.add("bi-eye");
+            icon.classList.replace("bi-eye-slash", "bi-eye");
         }
     }
 </script>
+
+<!-- Scoped styles -->
+<style>
+    .auth-card.no-motion,
+    .auth-card.no-motion * {
+        transition: none !important;
+    }
+
+    .auth-card.no-motion:hover {
+        transform: none !important;
+    }
+
+    .form-control-dark {
+        background-color: #2b2b2b !important;
+        color: #f8f9fa !important;
+        border: 1px solid #444 !important;
+    }
+
+    .form-control-dark::placeholder {
+        color: #aaa !important;
+    }
+
+    .form-control-dark:focus {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 6px rgba(220, 53, 69, 0.5);
+        outline: none;
+    }
+
+    .toggle-btn {
+        border-color: #444 !important;
+    }
+
+    .toggle-btn:hover {
+        background: #2b2b2b;
+        color: #f8f9fa;
+    }
+</style>
 {% endblock %}

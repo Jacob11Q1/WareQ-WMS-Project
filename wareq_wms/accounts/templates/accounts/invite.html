@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow-lg bg-dark text-light p-4">
+        <h3 class="fw-bold text-danger mb-4">
+            <i class="bi bi-person-plus"></i> Invite Team Members
+        </h3>
+
+        <!-- Alerts -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Invite Form -->
+        <form method="post" class="mb-4">
+            {% csrf_token %}
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Email</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-danger text-light"><i class="bi bi-envelope"></i></span>
+                    {{ form.email|add_class:"form-control bg-dark text-light border-secondary" }}
+                </div>
+                {% if form.email.errors %}
+                <div class="text-danger small mt-1">{{ form.email.errors|join:", " }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Role -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Role</label>
+                {{ form.role|add_class:"form-select bg-dark text-light border-secondary" }}
+                {% if form.role.errors %}
+                <div class="text-danger small mt-1">{{ form.role.errors|join:", " }}</div>
+                {% endif %}
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-send"></i> Send Invite
+                </button>
+            </div>
+        </form>
+
+        <!-- Pending Invites -->
+        <h5 class="fw-bold text-danger"><i class="bi bi-hourglass-split"></i> Pending Invites</h5>
+        <div class="table-responsive mt-3">
+            <table class="table table-dark table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Invited On</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invite in invites %}
+                    <tr>
+                        <td>{{ invite.email }}</td>
+                        <td><span class="badge bg-secondary">{{ invite.role|title }}</span></td>
+                        <td>{{ invite.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if invite.is_accepted %}
+                            <span class="badge bg-success">Accepted</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-muted text-center">No pending invites.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

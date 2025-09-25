@@ -1,91 +1,201 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container py-5 d-flex justify-content-center">
-    <div class="card shadow-lg bg-dark text-light w-100" style="max-width: 600px;">
-        <div class="card-body">
-            <!-- Title -->
-            <h2 class="fw-bold mb-4 text-center text-light">
-                {% if form.instance.pk %}
-                <i class="bi bi-pencil-square text-danger"></i> Edit Customer
-                {% else %}
-                <i class="bi bi-person-plus text-danger"></i> Add Customer
-                {% endif %}
-            </h2>
-
-            <!-- Form -->
-            <form method="post" novalidate id="customerForm" data-customer-id="{{ form.instance.pk|default:'' }}">
-                {% csrf_token %}
-                {% for field in form %}
-                <div class="mb-3">
-                    <label class="form-label">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.name == "email" %}
-                    <div id="emailFeedback" class="small mt-1"></div>
+<div class="page-customer-form"> {# scope all styles/fixes to this page #}
+    <div class="container py-5 d-flex justify-content-center">
+        <div class="card shadow-lg bg-dark text-light w-100 no-motion" style="max-width: 600px;">
+            <div class="card-body">
+                <!-- Title -->
+                <h2 class="fw-bold mb-4 text-center text-light">
+                    {% if form.instance.pk %}
+                    <i class="bi bi-pencil-square text-danger"></i> Edit Customer
+                    {% else %}
+                    <i class="bi bi-person-plus text-danger"></i> Add Customer
                     {% endif %}
-                    {% if field.errors %}
-                    <div class="text-danger small">{{ field.errors|striptags }}</div>
-                    {% endif %}
-                </div>
-                {% endfor %}
+                </h2>
 
-                <div class="d-grid mt-3">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-save"></i> Save
-                    </button>
-                </div>
-            </form>
+                <!-- Form -->
+                <form method="post" novalidate id="customerForm" data-customer-id="{{ form.instance.pk|default:'' }}">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label text-light" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.name == "email" %}
+                        <div id="emailFeedback" class="small mt-1" aria-live="polite"></div>
+                        {% endif %}
+                        {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
 
-            <!-- Back -->
-            <div class="text-center mt-4">
-                <a href="{% url 'customers:customer_list' %}" class="btn btn-outline-light">
-                    <i class="bi bi-arrow-left-circle"></i> Back to Customers
-                </a>
+                    <div class="d-grid mt-3">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-save"></i> Save
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Back -->
+                <div class="text-center mt-4">
+                    <a href="{% url 'customers:customer_list' %}" class="btn btn-outline-light">
+                        <i class="bi bi-arrow-left-circle"></i> Back to Customers
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Live Email Validation Script -->
-<script>
-    const emailInput = document.getElementById('id_email');
-    const emailFeedback = document.getElementById('emailFeedback');
-    const formEl = document.getElementById('customerForm');
-    const customerId = formEl.dataset.customerId;  // empty if new customer
+    <!-- Live Email Validation Script -->
+    <script>
+        (function () {
+            const formEl = document.getElementById('customerForm');
+            const customerId = formEl?.dataset.customerId || '';
+            const emailInput = document.getElementById('id_email');
+            const emailFeedback = document.getElementById('emailFeedback');
 
-    if (emailInput) {
-        emailInput.addEventListener('input', () => {
-            const email = emailInput.value.trim();
+            // ensure basic bootstrap classes for clean look if widgets missed them
+            document.querySelectorAll('#customerForm input, #customerForm select, #customerForm textarea').forEach(el => {
+                if (el.tagName === 'SELECT') {
+                    el.classList.add('form-select');
+                } else {
+                    el.classList.add('form-control');
+                }
+            });
 
-            // reset state if email looks incomplete
-            if (email.length < 4 || !email.includes('@')) {
+            // helpful attributes
+            if (emailInput) {
+                emailInput.setAttribute('autocomplete', 'off');
+                emailInput.setAttribute('inputmode', 'email');
+            }
+
+            // debounce helper
+            let t;
+            const debounce = (fn, wait = 350) => (...args) => {
+                clearTimeout(t);
+                t = setTimeout(() => fn.apply(null, args), wait);
+            };
+
+            const clearValidation = () => {
+                if (!emailInput || !emailFeedback) return;
                 emailFeedback.textContent = '';
+                emailFeedback.classList.remove('text-success', 'text-danger');
                 emailInput.classList.remove('is-valid', 'is-invalid');
-                return;
-            }
+            };
 
-            const params = new URLSearchParams({ email });
-            if (customerId) {
-                params.set('exclude', customerId);
-            }
+            const setValid = (msg) => {
+                emailFeedback.textContent = msg;
+                emailFeedback.classList.add('text-success');
+                emailFeedback.classList.remove('text-danger');
+                emailInput.classList.add('is-valid');
+                emailInput.classList.remove('is-invalid');
+            };
 
-            fetch(`/customers/validate-email/?${params.toString()}`)
-                .then(r => r.json())
-                .then(data => {
-                    if (data.exists) {
-                        emailFeedback.textContent = "Email already exists.";
-                        emailFeedback.classList.add('text-danger');
-                        emailFeedback.classList.remove('text-success');
-                        emailInput.classList.add('is-invalid');
-                        emailInput.classList.remove('is-valid');
-                    } else {
-                        emailFeedback.textContent = "Email available.";
-                        emailFeedback.classList.add('text-success');
-                        emailFeedback.classList.remove('text-danger');
-                        emailInput.classList.add('is-valid');
-                        emailInput.classList.remove('is-invalid');
-                    }
-                });
-        });
-    }
-</script>
+            const setInvalid = (msg) => {
+                emailFeedback.textContent = msg;
+                emailFeedback.classList.add('text-danger');
+                emailFeedback.classList.remove('text-success');
+                emailInput.classList.add('is-invalid');
+                emailInput.classList.remove('is-valid');
+            };
+
+            const validateEmail = debounce((val) => {
+                if (!emailInput || !emailFeedback) return;
+
+                // quick pre-check
+                if (val.length < 4 || !val.includes('@')) {
+                    clearValidation();
+                    return;
+                }
+
+                const params = new URLSearchParams({ email: val });
+                if (customerId) params.set('exclude', customerId);
+
+                fetch(`/customers/validate-email/?${params.toString()}`)
+                    .then(r => r.ok ? r.json() : Promise.reject())
+                    .then(data => {
+                        if (data.exists) {
+                            setInvalid('Email already exists.');
+                        } else {
+                            setValid('Email available.');
+                        }
+                    })
+                    .catch(() => {
+                        // on network/API error, don’t block typing with red
+                        clearValidation();
+                    });
+            }, 400);
+
+            if (emailInput) {
+                emailInput.addEventListener('input', () => validateEmail(emailInput.value.trim()));
+                emailInput.addEventListener('blur', () => validateEmail(emailInput.value.trim()));
+            }
+        })();
+    </script>
+
+    <!-- Page-scoped UX styles (dark-friendly inputs, visible placeholders, no hover/motion) -->
+    <style>
+        /* kill card hover/motion on this page only */
+        .page-customer-form .no-motion,
+        .page-customer-form .no-motion * {
+            transition: none !important;
+        }
+
+        .page-customer-form .no-motion.card:hover {
+            transform: none !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        /* dark inputs & selects */
+        .page-customer-form .form-control,
+        .page-customer-form .form-select,
+        .page-customer-form textarea {
+            background-color: var(--secondary) !important;
+            color: var(--text-color) !important;
+            border: 1px solid #444 !important;
+        }
+
+        .page-customer-form .form-control::placeholder {
+            color: #e6e6e6 !important;
+            /* readable placeholder */
+            opacity: 0.85;
+        }
+
+        /* keep border width constant on focus to avoid jump */
+        .page-customer-form .form-control:focus,
+        .page-customer-form .form-select:focus,
+        .page-customer-form textarea:focus {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 6px rgba(220, 53, 69, 0.45) !important;
+            outline: none !important;
+        }
+
+        /* ensure select option text is visible in dark dropdowns */
+        .page-customer-form .form-select option {
+            background-color: #2b2b2b;
+            color: #f8f9fa;
+        }
+
+        /* bootstrap validation colors tuned for dark bg */
+        .page-customer-form .is-valid {
+            border-color: #28a745 !important;
+            box-shadow: 0 0 4px rgba(40, 167, 69, 0.35) !important;
+        }
+
+        .page-customer-form .is-invalid {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 4px rgba(220, 53, 69, 0.35) !important;
+        }
+
+        /* handle autofill legibility */
+        .page-customer-form input:-webkit-autofill,
+        .page-customer-form input:-webkit-autofill:hover,
+        .page-customer-form input:-webkit-autofill:focus {
+            -webkit-text-fill-color: #f8f9fa;
+            -webkit-box-shadow: 0 0 0px 1000px var(--secondary) inset;
+            transition: background-color 5000s ease-in-out 0s;
+            caret-color: #f8f9fa;
+        }
+    </style>
+</div>
 {% endblock %}

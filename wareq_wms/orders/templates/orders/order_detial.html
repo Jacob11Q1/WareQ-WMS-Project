@@ -14,7 +14,8 @@
 
             <p><strong>Status:</strong>
                 <!-- AJAX Status Update -->
-                <select id="statusDropdown" class="form-select d-inline w-auto" data-order-id="{{ order.id }}">
+                <select id="statusDropdown" class="form-select custom-select d-inline w-auto"
+                    data-order-id="{{ order.id }}">
                     <option value="PENDING" {% if order.status=="PENDING" %}selected{% endif %}>Pending</option>
                     <option value="PROCESSING" {% if order.status=="PROCESSING" %}selected{% endif %}>Processing
                     </option>
@@ -34,9 +35,9 @@
             </div>
             {% endif %}
 
-            <h4 class="mt-4">Items</h4>
-            <table class="table table-dark table-hover">
-                <thead>
+            <h4 class="mt-4 text-danger fw-bold">Items</h4>
+            <table class="table table-dark align-middle mb-0">
+                <thead class="custom-thead">
                     <tr>
                         <th>Item</th>
                         <th>Qty</th>
@@ -62,19 +63,22 @@
                 </tfoot>
             </table>
 
-            <div class="mt-3">
-                <a href="{% url 'orders:order_update' order.id %}" class="btn btn-warning"><i class="bi bi-pencil"></i>
-                    Edit</a>
-                <a href="{% url 'orders:order_delete' order.id %}" class="btn btn-danger"><i class="bi bi-trash"></i>
-                    Delete</a>
-                <a href="{% url 'orders:order_list' %}" class="btn btn-outline-light"><i class="bi bi-arrow-left"></i>
-                    Back</a>
+            <div class="mt-4">
+                <a href="{% url 'orders:order_update' order.id %}" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="{% url 'orders:order_delete' order.id %}" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+                <a href="{% url 'orders:order_list' %}" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
             </div>
         </div>
     </div>
 </div>
 
-<!-- AJAX Status Update Script (CSRF via cookie) -->
+<!-- AJAX Status Update Script -->
 <script>
     function getCookie(name) {
         let cookieValue = null;
@@ -108,7 +112,7 @@
             .then(data => {
                 if (data.success) {
                     alert(`Order #${orderId} updated to ${data.status}`);
-                    location.reload(); // refresh to show any status-related notes
+                    location.reload();
                 } else {
                     alert(`Error: ${data.error}`);
                 }
@@ -116,4 +120,37 @@
             .catch(() => alert("Failed to update status."));
     });
 </script>
+
+<style>
+    /* Fix dropdowns inside dark theme */
+    .custom-select {
+        background-color: var(--secondary) !important;
+        color: var(--text-color) !important;
+        border: 1px solid var(--secondary);
+    }
+
+    .custom-select option {
+        background-color: var(--secondary);
+        color: var(--text-color);
+    }
+
+    .custom-select:focus {
+        border: 2px solid var(--accent) !important;
+        box-shadow: none !important;
+    }
+
+    /* Remove hover expansion */
+    .table-dark tbody tr:hover {
+        background-color: transparent !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Professional table header */
+    .custom-thead th {
+        background-color: var(--secondary) !important;
+        color: var(--text-color) !important;
+        border-bottom: 2px solid var(--accent);
+    }
+</style>
 {% endblock %}

@@ -19,32 +19,66 @@
 <section class="py-5">
     <div class="container">
         <div id="mainCarousel" class="carousel slide mb-5 shadow-lg rounded" data-bs-ride="carousel">
+
+            <!-- Indicators -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="2"></button>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="3"></button>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="4"></button>
+            </div>
+
+            <!-- Slides -->
             <div class="carousel-inner rounded">
+                <!-- Inventory -->
                 <div class="carousel-item active">
-                    <img src="https://via.placeholder.com/1200x400/111111/ffffff?text=Inventory+Management"
-                        class="d-block w-100 rounded" alt="Inventory">
+                    <img src="{% static 'images/carousel_inventory.jpeg' %}" class="d-block w-100 carousel-img"
+                        alt="Inventory">
                     <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
                         <h5 class="text-danger"><i class="bi bi-box-seam"></i> Smart Inventory</h5>
                         <p>Track stock in real-time with accuracy.</p>
                     </div>
                 </div>
+                <!-- Orders -->
                 <div class="carousel-item">
-                    <img src="https://via.placeholder.com/1200x400/222222/ffffff?text=Order+Processing"
-                        class="d-block w-100 rounded" alt="Orders">
+                    <img src="{% static 'images/carousel_orders.webp' %}" class="d-block w-100 carousel-img"
+                        alt="Orders">
                     <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
                         <h5 class="text-danger"><i class="bi bi-cart-check-fill"></i> Fast Orders</h5>
                         <p>Manage sales & purchase orders effortlessly.</p>
                     </div>
                 </div>
+                <!-- Dashboard -->
                 <div class="carousel-item">
-                    <img src="https://via.placeholder.com/1200x400/333333/ffffff?text=Dashboard+Analytics"
-                        class="d-block w-100 rounded" alt="Dashboard">
+                    <img src="{% static 'images/carousel_dashboard.jpg' %}" class="d-block w-100 carousel-img"
+                        alt="Dashboard">
                     <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
                         <h5 class="text-danger"><i class="bi bi-bar-chart-line-fill"></i> Powerful Dashboard</h5>
                         <p>Visualize KPIs and performance instantly.</p>
                     </div>
                 </div>
+                <!-- Customers -->
+                <div class="carousel-item">
+                    <img src="{% static 'images/carousel_customers.webp' %}" class="d-block w-100 carousel-img"
+                        alt="Customers">
+                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+                        <h5 class="text-danger"><i class="bi bi-people-fill"></i> Customer Management</h5>
+                        <p>Track customer accounts & order history.</p>
+                    </div>
+                </div>
+                <!-- Suppliers -->
+                <div class="carousel-item">
+                    <img src="{% static 'images/carousel_suppliers.webp' %}" class="d-block w-100 carousel-img"
+                        alt="Suppliers">
+                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+                        <h5 class="text-danger"><i class="bi bi-truck"></i> Supplier Integration</h5>
+                        <p>Manage supplier records & streamline sourcing.</p>
+                    </div>
+                </div>
             </div>
+
+            <!-- Controls -->
             <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon bg-danger rounded-circle p-3"></span>
             </button>
