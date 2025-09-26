@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'orders/orders.css' %}">
+<link rel="stylesheet" href="{% static 'orders/orders.css' %}?v=1">
 {% endblock %}
 
 {% block content %}
@@ -26,7 +26,7 @@
                 <p class="text-light">
                     Are you sure you want to delete
                     <strong>Order #{{ order.id }}</strong> ({{ order.get_order_type_display }})
-                    with total <strong>${{ order.total_amount }}</strong>?
+                    with total <strong>${{ order.total_amount|floatformat:2 }}</strong>?
                 </p>
                 <form method="post">
                     {% csrf_token %}

@@ -2,15 +2,65 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'orders/orders.css' %}">
+<link rel="stylesheet" href="{% static 'orders/orders.css' %}?v=3">
+<style>
+    /* Keep this page self-contained and clickable */
+    .page-orders-edit .cell-relative {
+        position: relative;
+    }
+
+    /* Live search dropdown pinned under the input */
+    .page-orders-edit .live-dropdown {
+        position: absolute;
+        max-height: 220px;
+        overflow-y: auto;
+        background: #2b2b2b;
+        border: 1px solid #444;
+        border-radius: .5rem;
+        z-index: 1050;
+    }
+
+    .page-orders-edit .live-dropdown .list-group-item {
+        background: #2b2b2b;
+        color: #f8f9fa;
+    }
+
+    .page-orders-edit .live-dropdown .list-group-item:hover {
+        background: #3a3a3a;
+        cursor: pointer;
+    }
+
+    /* Make sure nothing giant overlays the form */
+    .page-orders-edit .card,
+    .page-orders-edit .table-responsive {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* CRITICAL: hide only the native select inside the item cell so it doesn't block clicks */
+    .page-orders-edit .cell-relative select {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Last-resort readability on dark tables for this page */
+    .page-orders-edit .table,
+    .page-orders-edit .table * {
+        color: #f8f9fa !important;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="page-orders-edit">
     <div class="container py-5 d-flex justify-content-center">
-        <div class="card shadow-lg bg-dark text-light w-100 no-motion" style="max-width: 950px; border-radius: 1rem;">
+        <div class="card shadow-lg stat-card w-100 no-motion" style="max-width: 950px;">
             <div class="card-body p-5">
-                <!-- Title -->
                 <h2 class="fw-bold mb-4 text-center text-light">
                     {% if form.instance.pk %}
                     <i class="bi bi-pencil-square text-danger"></i> Edit Order
@@ -19,7 +69,6 @@
                     {% endif %}
                 </h2>
 
-                <!-- Order Form -->
                 <form method="post" id="orderForm" novalidate>
                     {% csrf_token %}
 
@@ -41,7 +90,7 @@
 
                     <div class="table-responsive">
                         <table class="table table-dark align-middle mb-0 no-hover-table" id="orderItemsTable">
-                            <thead class="table-dark">
+                            <thead class="custom-thead">
                                 <tr>
                                     <th>Item</th>
                                     <th class="text-center">Qty</th>
@@ -55,7 +104,8 @@
                                 <tr>
                                     <td class="cell-relative">
                                         <input type="text" class="form-control item-search mb-2"
-                                            placeholder="Search item..." data-input-id="{{ f.item.id_for_label }}">
+                                            placeholder="Search item..." data-input-id="{{ f.item.id_for_label }}"
+                                            autocomplete="off">
                                         {{ f.item }}
                                     </td>
                                     <td class="text-center">{{ f.quantity }}</td>
@@ -65,7 +115,7 @@
                                 </tr>
                                 {% endfor %}
                             </tbody>
-                            <tfoot class="table-dark">
+                            <tfoot>
                                 <tr>
                                     <th colspan="3" class="text-end">Grand Total</th>
                                     <th id="grandTotal" class="fw-bold text-success text-end">$0.00</th>
@@ -82,6 +132,7 @@
                         </button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
@@ -90,64 +141,90 @@
 
 {% block extra_js %}
 <script>
-    // ====== Live Item Search ======
-    function closeAllDropdowns() {
-        document.querySelectorAll(".live-dropdown").forEach(dd => dd.remove());
-    }
-    document.addEventListener("click", e => {
-        if (!e.target.closest(".cell-relative")) closeAllDropdowns();
-    });
+    (function () {
+        // ---------- Helpers ----------
+        function closeAllDropdowns() { document.querySelectorAll(".live-dropdown").forEach(dd => dd.remove()); }
 
-    document.querySelectorAll(".item-search").forEach(input => {
-        input.addEventListener("keyup", function () {
-            const q = this.value.trim();
-            const hiddenInputId = this.dataset.inputId;
-            closeAllDropdowns();
-            if (q.length < 2) return;
+        // Close dropdown when clicking outside the item cell
+        document.addEventListener("click", e => { if (!e.target.closest(".cell-relative")) closeAllDropdowns(); });
 
-            fetch(`/orders/search-items/?q=${encodeURIComponent(q)}`)
-                .then(res => res.json())
-                .then(items => {
-                    if (!items.length) return;
-                    const dropdown = document.createElement("ul");
-                    dropdown.className = "list-group position-absolute live-dropdown";
-                    dropdown.style.width = this.offsetWidth + "px";
+        // Close on resize/scroll/Esc
+        window.addEventListener("resize", closeAllDropdowns, { passive: true });
+        document.addEventListener("scroll", closeAllDropdowns, { passive: true });
+        document.querySelectorAll(".page-orders-edit .table-responsive")
+            .forEach(el => el.addEventListener("scroll", closeAllDropdowns, { passive: true }));
+        document.addEventListener("keydown", e => { if (e.key === "Escape") closeAllDropdowns(); });
 
-                    items.forEach(item => {
-                        const li = document.createElement("li");
-                        li.className = "list-group-item list-group-item-action";
-                        li.textContent = `${item.name} ($${item.price})`;
-                        li.onclick = () => {
-                            document.getElementById(hiddenInputId).value = item.id;
-                            this.value = item.name;
-                            dropdown.remove();
-                            const priceInput = this.closest("tr").querySelector(".price-field input");
-                            if (priceInput) priceInput.value = item.price;
-                            updateTotals();
-                        };
-                        dropdown.appendChild(li);
-                    });
-                    this.parentNode.appendChild(dropdown);
-                });
+        // ---------- Live Item Search ----------
+        document.querySelectorAll(".item-search").forEach(input => {
+            input.addEventListener("input", onType);
+            input.addEventListener("focus", onType);
+
+            function onType() {
+                const q = this.value.trim();
+                const hiddenInputId = this.dataset.inputId;
+                const hostCell = this.closest(".cell-relative");
+
+                closeAllDropdowns();
+                if (q.length < 2) return;
+
+                fetch(`/orders/search-items/?q=${encodeURIComponent(q)}`)
+                    .then(res => res.json())
+                    .then(items => {
+                        if (!items || !items.length) return;
+
+                        const dd = document.createElement("ul");
+                        dd.className = "list-group live-dropdown";
+                        dd.addEventListener("click", e => e.stopPropagation());
+
+                        // robust position – works inside scrollable .table-responsive
+                        const inputRect = this.getBoundingClientRect();
+                        const hostRect = hostCell.getBoundingClientRect();
+                        dd.style.width = inputRect.width + "px";
+                        dd.style.left = (inputRect.left - hostRect.left) + "px";
+                        dd.style.top = (inputRect.bottom - hostRect.top + 4) + "px";
+
+                        items.forEach(item => {
+                            const li = document.createElement("li");
+                            li.className = "list-group-item list-group-item-action";
+                            li.textContent = `${item.name} ($${Number(item.price).toFixed(2)})`;
+                            li.onclick = () => {
+                                const hidden = document.getElementById(hiddenInputId);
+                                if (hidden) hidden.value = item.id;
+                                input.value = item.name;
+
+                                const priceInput = input.closest("tr").querySelector(".price-field input");
+                                if (priceInput) priceInput.value = Number(item.price).toFixed(2);
+
+                                dd.remove();
+                                updateTotals();
+                            };
+                            dd.appendChild(li);
+                        });
+
+                        hostCell.appendChild(dd);
+                    })
+                    .catch(() => { });
+            }
         });
-    });
 
-    // ====== Totals Calculation ======
-    function updateTotals() {
-        let grand = 0;
-        document.querySelectorAll("#orderItemsTable tbody tr").forEach(row => {
-            const qty = parseFloat(row.querySelector("input[name$='quantity']")?.value) || 0;
-            const price = parseFloat(row.querySelector("input[name$='price']")?.value) || 0;
-            const total = qty * price;
-            row.querySelector(".row-total").textContent = `$${total.toFixed(2)}`;
-            grand += total;
-        });
-        document.getElementById("grandTotal").textContent = `$${grand.toFixed(2)}`;
-    }
-
-    document.querySelectorAll("input[name$='quantity'], input[name$='price']")
-        .forEach(i => i.addEventListener("input", updateTotals));
-
-    updateTotals();
+        // ---------- Totals ----------
+        function updateTotals() {
+            let grand = 0;
+            document.querySelectorAll("#orderItemsTable tbody tr").forEach(row => {
+                const qty = parseFloat(row.querySelector("input[name$='quantity']")?.value) || 0;
+                const price = parseFloat(row.querySelector("input[name$='price']")?.value) || 0;
+                const total = qty * price;
+                const cell = row.querySelector(".row-total");
+                if (cell) cell.textContent = `$${total.toFixed(2)}`;
+                grand += total;
+            });
+            const gt = document.getElementById("grandTotal");
+            if (gt) gt.textContent = `$${grand.toFixed(2)}`;
+        }
+        document.querySelectorAll("input[name$='quantity'], input[name$='price']")
+            .forEach(i => i.addEventListener("input", updateTotals));
+        updateTotals();
+    })();
 </script>
 {% endblock %}

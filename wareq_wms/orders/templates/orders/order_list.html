@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'orders/orders.css' %}">
+<link rel="stylesheet" href="{% static 'orders/orders.css' %}?v=2">
 {% endblock %}
 
 {% block content %}
@@ -40,11 +40,11 @@
             </div>
         </form>
 
-        <!-- Orders Table -->
-        <div class="card shadow-lg stat-card no-motion">
+        <!-- Desktop Table -->
+        <div class="card shadow-lg stat-card no-motion d-none d-md-block">
             <div class="card-body table-responsive">
                 <table class="table table-dark align-middle mb-0 no-hover-table">
-                    <thead class="text-danger">
+                    <thead class="text-danger custom-thead">
                         <tr>
                             <th>#</th>
                             <th>Type</th>
@@ -82,19 +82,19 @@
                             </td>
                             <td>{{ order.customer|default:"-" }}</td>
                             <td>{{ order.supplier|default:"-" }}</td>
-                            <td>${{ order.total_amount }}</td>
+                            <td>${{ order.total_amount|floatformat:2 }}</td>
                             <td>{{ order.created_at|date:"M d, Y" }}</td>
                             <td>
-                                <a href="{% url 'orders:order_detail' order.id %}"
-                                    class="btn btn-sm btn-outline-light no-hover">
+                                <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-sm btn-outline-light"
+                                    data-bs-toggle="tooltip" title="View">
                                     <i class="bi bi-eye"></i>
                                 </a>
                                 <a href="{% url 'orders:order_update' order.id %}"
-                                    class="btn btn-sm btn-outline-warning no-hover">
+                                    class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="{% url 'orders:order_delete' order.id %}"
-                                    class="btn btn-sm btn-outline-danger no-hover">
+                                <a href="{% url 'orders:order_delete' order.id %}" class="btn btn-sm btn-outline-danger"
+                                    data-bs-toggle="tooltip" title="Delete">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </td>
@@ -129,10 +129,56 @@
                 </nav>
             </div>
         </div>
+
+        <!-- Mobile Cards -->
+        <div class="d-md-none">
+            {% for order in orders %}
+            <div class="order-card">
+                <div class="row-line">
+                    <div class="fw-semibold">#{{ order.id }}</div>
+                    <div>
+                        {% if order.order_type == "SALE" %}
+                        <span class="badge bg-success">Sale</span>
+                        {% else %}
+                        <span class="badge bg-info">Purchase</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row-line">
+                    <span>Status</span>
+                    <select class="form-select form-select-sm custom-select status-dropdown"
+                        data-order-id="{{ order.id }}">
+                        <option value="PENDING" {% if order.status == "PENDING" %}selected{% endif %}>Pending</option>
+                        <option value="PROCESSING" {% if order.status == "PROCESSING" %}selected{% endif %}>Processing
+                        </option>
+                        <option value="COMPLETED" {% if order.status == "COMPLETED" %}selected{% endif %}>Completed
+                        </option>
+                        <option value="CANCELLED" {% if order.status == "CANCELLED" %}selected{% endif %}>Cancelled
+                        </option>
+                    </select>
+                </div>
+                <div class="row-line"><span>Customer</span><span>{{ order.customer|default:"-" }}</span></div>
+                <div class="row-line"><span>Supplier</span><span>{{ order.supplier|default:"-" }}</span></div>
+                <div class="row-line"><span>Total</span><span>${{ order.total_amount|floatformat:2 }}</span></div>
+                <div class="row-line"><span>Date</span><span>{{ order.created_at|date:"M d, Y" }}</span></div>
+                <div class="mt-2 d-flex gap-2">
+                    <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-sm btn-outline-light flex-fill"
+                        data-bs-toggle="tooltip" title="View"><i class="bi bi-eye"></i></a>
+                    <a href="{% url 'orders:order_update' order.id %}" class="btn btn-sm btn-outline-warning flex-fill"
+                        data-bs-toggle="tooltip" title="Edit"><i class="bi bi-pencil"></i></a>
+                    <a href="{% url 'orders:order_delete' order.id %}" class="btn btn-sm btn-outline-danger flex-fill"
+                        data-bs-toggle="tooltip" title="Delete"><i class="bi bi-trash"></i></a>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center text-muted">No orders found.</p>
+            {% endfor %}
+        </div>
     </div>
 </div>
+{% endblock %}
 
-<!-- AJAX status updates -->
+{% block extra_js %}
 <script>
     function getCookie(name) {
         let cookieValue = null;
@@ -150,20 +196,29 @@
     }
     const csrftoken = getCookie("csrftoken");
 
-    document.querySelectorAll(".status-dropdown").forEach(select => {
-        select.addEventListener("change", function () {
-            const orderId = this.dataset.orderId;
-            const newStatus = this.value;
-
-            fetch(`/orders/${orderId}/update-status/`, {
-                method: "POST",
-                headers: { "X-CSRFToken": csrftoken, "Content-Type": "application/x-www-form-urlencoded" },
-                body: `status=${encodeURIComponent(newStatus)}`
-            })
-                .then(res => res.json())
-                .then(data => { if (!data.success) alert(`Error: ${data.error}`); })
-                .catch(() => alert("Failed to update status."));
+    function initStatusDropdowns() {
+        document.querySelectorAll(".status-dropdown").forEach(select => {
+            select.addEventListener("change", function () {
+                fetch(`/orders/${this.dataset.orderId}/update-status/`, {
+                    method: "POST",
+                    headers: { "X-CSRFToken": csrftoken, "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `status=${encodeURIComponent(this.value)}`
+                })
+                    .then(res => res.json())
+                    .then(data => { if (!data.success) alert(`Error: ${data.error}`); })
+                    .catch(() => alert("Failed to update status."));
+            });
         });
+    }
+
+    function initTooltips() {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        initStatusDropdowns();
+        initTooltips();
     });
 </script>
 {% endblock %}

@@ -1,0 +1,318 @@
+/* ============================================================
+   WareQ — Orders App (FINAL OVERRIDE BUILD)
+   Dark theme, strong specificity, safe on Windows, no hover junk
+   ============================================================ */
+
+/* ------------------ SCOPING / BASE ------------------ */
+:root {
+    --orders-bg-1: #1e1e1e;
+    --orders-bg-2: #2b2b2b;
+    --orders-bd: #333;
+    --orders-bd2: #444;
+    --orders-fg: #f8f9fa;
+    --orders-fg-d: #ddd;
+    --orders-fg-m: #bbb;
+    --orders-ac: #dc3545;
+    /* accent red */
+    --orders-ac-2: #bb2d3b;
+    --orders-ok: #28a745;
+    --orders-warn: #ffc107;
+    --orders-info: #17a2b8;
+}
+
+.page-orders-list,
+.page-orders-edit,
+.page-orders-detail,
+.page-orders-delete,
+.page-orders-invoice,
+.page-orders-dashboard,
+.page-orders-report,
+.page-invoice {
+    font-family: "Inter", system-ui, sans-serif !important;
+    color: var(--orders-fg) !important;
+}
+
+/* Kill motion + hover glare (keep clicks) */
+.no-motion,
+.no-motion * {
+    transition: none !important;
+}
+
+.no-hover-table tbody tr:hover {
+    background: transparent !important;
+}
+
+.no-hover,
+.no-hover:hover {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Make links/buttons obviously interactive on dark */
+.page-orders-list a,
+.page-orders-edit a,
+.page-orders-detail a,
+.page-orders-delete a,
+.page-orders-invoice a,
+.page-orders-dashboard a,
+.page-orders-report a,
+.page-invoice a {
+    color: var(--orders-fg) !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+}
+
+.page-orders-list a:hover,
+.page-orders-edit a:hover,
+.page-orders-detail a:hover,
+.page-orders-delete a:hover,
+.page-orders-invoice a:hover,
+.page-orders-dashboard a:hover,
+.page-orders-report a:hover,
+.page-invoice a:hover {
+    text-decoration: underline !important;
+}
+
+/* ------------------ CARDS ------------------ */
+.stat-card {
+    background: var(--orders-bg-1) !important;
+    border: 1px solid var(--orders-bd) !important;
+    border-radius: 1rem !important;
+    color: var(--orders-fg) !important;
+}
+
+.stat-card:hover {
+    transform: none !important;
+    box-shadow: 0 0 12px rgba(220, 53, 69, .20) !important;
+}
+
+/* ------------------ TABLES ------------------ */
+.page-orders-list .table,
+.page-orders-edit .table,
+.page-orders-detail .table,
+.page-orders-delete .table,
+.page-orders-invoice .table,
+.page-orders-dashboard .table,
+.page-orders-report .table,
+.page-invoice .table {
+    background: var(--orders-bg-2) !important;
+    color: var(--orders-fg) !important;
+    border-color: var(--orders-bd2) !important;
+}
+
+.page-orders-list .table *,
+.page-orders-edit .table *,
+.page-orders-detail .table *,
+.page-orders-delete .table *,
+.page-orders-invoice .table *,
+.page-orders-dashboard .table *,
+.page-orders-report .table *,
+.page-invoice .table * {
+    color: var(--orders-fg) !important;
+}
+
+.table-dark {
+    background: var(--orders-bg-2) !important;
+    color: var(--orders-fg) !important;
+    border-color: var(--orders-bd2) !important;
+}
+
+.table-dark th,
+.table-dark td {
+    border-color: var(--orders-bd2) !important;
+}
+
+.custom-thead th,
+.page-orders-list .custom-thead th,
+.page-orders-edit .custom-thead th,
+.page-orders-detail .custom-thead th,
+.page-orders-invoice .custom-thead th,
+.page-orders-dashboard .custom-thead th,
+.page-orders-report .custom-thead th,
+.page-invoice .custom-thead th {
+    background: var(--orders-bg-1) !important;
+    color: #fff !important;
+    border-bottom: 2px solid var(--orders-ac) !important;
+    letter-spacing: .02em !important;
+}
+
+.page-orders-list .table tbody tr:hover,
+.page-orders-edit .table tbody tr:hover,
+.page-orders-detail .table tbody tr:hover,
+.page-orders-delete .table tbody tr:hover,
+.page-orders-invoice .table tbody tr:hover,
+.page-orders-dashboard .table tbody tr:hover,
+.page-orders-report .table tbody tr:hover,
+.page-invoice .table tbody tr:hover {
+    background: transparent !important;
+    /* no highlight rows */
+}
+
+/* Ensure table containers don’t create overlay issues */
+.page-orders-edit .table-responsive,
+.page-orders-list .table-responsive,
+.page-orders-detail .table-responsive {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* ------------------ INPUTS / SELECTS ------------------ */
+.custom-input,
+.custom-select,
+.form-control,
+.form-select {
+    background: var(--orders-bg-2) !important;
+    color: var(--orders-fg) !important;
+    border: 1px solid var(--orders-bd2) !important;
+    border-radius: .5rem !important;
+    padding: .5rem .75rem !important;
+}
+
+.custom-input::placeholder,
+.form-control::placeholder {
+    color: #d6d6d6 !important;
+    opacity: 1 !important;
+}
+
+.custom-input:focus,
+.custom-select:focus,
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--orders-ac) !important;
+    box-shadow: 0 0 6px rgba(220, 53, 69, .45) !important;
+}
+
+/* Windows native select popup: readable text */
+.form-select option {
+    background: #ffffff !important;
+    color: #111111 !important;
+}
+
+/* Hide the native item <select> ONLY inside item cell to prevent click blocking */
+.page-orders-edit .cell-relative {
+    position: relative !important;
+}
+
+.page-orders-edit .cell-relative select {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* ------------------ LIVE SEARCH DROPDOWN ------------------ */
+.page-orders-edit .live-dropdown {
+    position: absolute !important;
+    top: calc(100% + 4px) !important;
+    left: 0 !important;
+    width: 100% !important;
+    max-height: 220px !important;
+    overflow-y: auto !important;
+    background: var(--orders-bg-2) !important;
+    border: 1px solid var(--orders-bd2) !important;
+    border-radius: .5rem !important;
+    z-index: 1050 !important;
+    /* above table bits */
+}
+
+.page-orders-edit .live-dropdown .list-group-item {
+    background: var(--orders-bg-2) !important;
+    color: var(--orders-fg) !important;
+}
+
+.page-orders-edit .live-dropdown .list-group-item:hover {
+    background: #3a3a3a !important;
+    cursor: pointer !important;
+}
+
+/* Keep main card above stray elements */
+.page-orders-edit .card {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* ------------------ BADGES / BUTTONS ------------------ */
+.badge {
+    font-size: .8rem !important;
+    padding: .4rem .6rem !important;
+    border-radius: .4rem !important;
+    font-weight: 600 !important;
+}
+
+.btn {
+    border-radius: .5rem !important;
+}
+
+.btn-outline-light {
+    border-color: #666 !important;
+    color: var(--orders-fg) !important;
+}
+
+.btn-outline-light:hover {
+    background: #444 !important;
+}
+
+.btn-danger {
+    background: var(--orders-ac) !important;
+    border: none !important;
+}
+
+.btn-danger:hover {
+    background: var(--orders-ac-2) !important;
+}
+
+/* ------------------ PAGINATION ------------------ */
+.pagination .page-link {
+    background: var(--orders-bg-2) !important;
+    border: 1px solid var(--orders-bd2) !important;
+    color: var(--orders-fg) !important;
+}
+
+.pagination .page-link:hover {
+    background: #444 !important;
+    border-color: var(--orders-ac) !important;
+}
+
+.pagination .page-item.disabled .page-link {
+    background: var(--orders-bg-1) !important;
+    color: #666 !important;
+}
+
+/* ------------------ DASHBOARD / REPORT EMPHASIS ------------------ */
+.page-orders-invoice .grand-total-box,
+.page-orders-detail .grand-total-box,
+.page-orders-edit .grand-total-box {
+    background: var(--orders-bg-1) !important;
+    border: 1px solid var(--orders-bd) !important;
+    border-radius: .8rem !important;
+}
+
+.page-orders-invoice .grand-total-box h3,
+.page-orders-detail tfoot th:last-child,
+.page-orders-edit #grandTotal {
+    color: var(--orders-ac) !important;
+    font-weight: 800 !important;
+}
+
+.page-orders-report .custom-thead th {
+    background: var(--orders-bg-1) !important;
+    color: #fff !important;
+    border-bottom: 2px solid var(--orders-ac) !important;
+}
+
+.page-orders-report .table-dark tbody tr:hover {
+    background: transparent !important;
+}
+
+/* ------------------ MISC ------------------ */
+[data-bs-toggle="tooltip"] {
+    cursor: help !important;
+}
+
+/* DO NOT ADD ANY GLOBAL DEBUG OUTLINES HERE.
+   If you see pages showing only thin lines, make sure there is NO:
+   * { outline: 1px solid rgba(220,53,69,.15); }
+*/
