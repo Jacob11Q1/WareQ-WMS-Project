@@ -32,7 +32,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key")   # fallback if missing
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = [
+    "wareq-wms-env.eba-3c2k7w7p.eu-north-1.elasticbeanstalk.com",
+    "127.0.0.1",
+    "localhost"
+]
 
 
 
