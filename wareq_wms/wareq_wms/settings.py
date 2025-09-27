@@ -13,9 +13,11 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
+import pymysql
 
 # Load .env file
 load_dotenv()
+pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -169,9 +171,9 @@ WSGI_APPLICATION = 'wareq_wms.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'wareqwms-db',   # <-- must match DB name in AWS console
+        'NAME': 'wareq_wms',   # <-- must match DB name in AWS console
         'USER': 'admin',         # <-- must match master username
-        'PASSWORD': '190275@11Jqq',
+        'PASSWORD': 'Wareq#2025!Strong11',
         'HOST': 'wareqwms-db.cbc4i2gqy5z8.eu-north-1.rds.amazonaws.com',
         'PORT': '3306',
     }
